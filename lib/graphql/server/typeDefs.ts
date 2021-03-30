@@ -1,17 +1,24 @@
 import { gql } from 'apollo-server-micro'
 
 const typeDefs = gql`
-  # Comments in GraphQL strings (such as this one) start with the hash (#) symbol.
-
-  type Book {
-    title: String
-    author: String
-  }
-
+  type User {
+    id: ID!
+    username: String!
+    email: String!
+    password: String!
+}
+type AuthPayload {
+  token: String!
+  error: String!
+}
   type Query {
-    books: [Book],
-    book(item: Int): Book
+    user: String
+  }
+  type Mutation{
+  registerUser(username: String!, password: String!, email: String!): AuthPayload
   }
 `
+
+
 
 export default typeDefs

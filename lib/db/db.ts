@@ -14,7 +14,7 @@ export async function query(q: string, values: (string | number)[] | string | nu
     const results = await db.query(q, values)
     await db.end()
     return results
-  } catch {
-    return false
+  } catch(err) {
+    return err
   }
 }
