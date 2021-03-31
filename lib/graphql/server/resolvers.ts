@@ -38,7 +38,7 @@ const resolvers = {
                 if (!validator.isEmail(args.email) || !regex.test(args.password))
                     throw new UserInputError('Wrong credentials')
                 
-                const user = await query('SELECT * FROM users WHERE email = ? AND verified = 1', [args.email])
+                const user = await query('SELECT id, password FROM users WHERE email = ? AND verified = 1', [args.email])
                 if (user.length === 0) throw new AuthenticationError('Wrong credentials')
 
                 const match = await bcrypt.compare(args.password, (user[0] as UserType).password)
@@ -47,8 +47,8 @@ const resolvers = {
                 const refreshToken = jwt.sign({ id: (user[0] as UserType).id }, `${process.env.REFRESH_TOKEN_SECRET}`)
                 const accessToken = jwt.sign({ id: (user[0] as UserType).id }, `${process.env.ACCESS_TOKEN_SECRET}`, { expiresIn: '5m' })
 
-                const insertRefreshToken = await query('UPDATE users SET refreshToken = ?', [refreshToken])
-                if (insertRefreshToken.changedRows != 1) throw new Error()
+                const insertRefreshToken = await query('INSERT INTO refresh_tokens VALUES (NULL, ?, ?)', [refreshToken, (user[0] as UserType).id])
+                if (insertRefreshToken.affectedRows !== 1) throw new Error()
 
                 return {
                     refreshToken,
