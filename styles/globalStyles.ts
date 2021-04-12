@@ -3,6 +3,7 @@ import { createGlobalStyle, GlobalStyleComponent, DefaultTheme } from 'styled-co
 const GlobalStyles : GlobalStyleComponent<{}, DefaultTheme> = createGlobalStyle<any>`
     body {
         background-color: ${({ theme }) => theme.colors.light};
+        color: ${({ theme }) => theme.colors.dark};
     }
     a {
         color: inherit;
