@@ -1,15 +1,23 @@
+import validator from 'validator'
+import { memo } from 'react'
+
 import * as SC from './styledInputs'
+import { InputsProps } from './inputsProps'
 
-export const Email : React.FC = () => (
+export const LoginEmail : React.FC<InputsProps> = memo(({ register, error }) => (
     <SC.StyledInputWrapper>
-        <SC.StyledLabel htmlFor='email'>Adres e-mail</SC.StyledLabel>
-        <SC.StyledInput name='email' id='email' type='text' />
+        <SC.StyledLabel error={error} htmlFor='email'>{error ? error.message : 'Adres e-mail'}</SC.StyledLabel>
+        <SC.StyledInput {...register('email', { required: 'Pole jest wymagane', validate: (value : string) => {
+            if (!validator.isEmail(value)) return 'Niepoprawny adres e-mail'
+            return undefined
+        }})} 
+        id='email' type='text' />
     </SC.StyledInputWrapper>
-)
+))
 
-export const Password : React.FC = () => (
+export const LoginPassword : React.FC<InputsProps> = memo(({ register, error }) => (
     <SC.StyledInputWrapper>
-        <SC.StyledLabel htmlFor='password'>Hasło</SC.StyledLabel>
-        <SC.StyledInput name='password' id='password' type='password' />
+        <SC.StyledLabel error={error} htmlFor='password'>{error ? error.message : 'Hasło'}</SC.StyledLabel>
+        <SC.StyledInput {...register('password', { required: 'Pole jest wymagane' })} id='password' type='password' />
     </SC.StyledInputWrapper>
-)
+))

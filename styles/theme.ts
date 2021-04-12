@@ -3,7 +3,7 @@ const theme = {
         light: '#FAFAFA',
         dark: '#212121',
         darkerLight: '#E0E0E0',
-        error: 'red',
+        error: '#f44336',
         success: '#689F38',
         primary: '#1A237E'
     },

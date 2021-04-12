@@ -5,8 +5,13 @@ export const StyledInputWrapper : StyledComponent<"div", any> = styled.div`
     row-gap: 5px;
 `
 
-export const StyledLabel : StyledComponent<"label", any> = styled.label`
+interface StyledLabelProps {
+    error : {} | undefined;
+}
+
+export const StyledLabel : StyledComponent<"label", any, StyledLabelProps> = styled.label<StyledLabelProps>`
     font-size: 18px;
+    color: ${({ theme, error }) => error ? theme.colors.error : theme.colors.dark};
 `
 
 export const StyledInput : StyledComponent<"input", any> = styled.input`
