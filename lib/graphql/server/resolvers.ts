@@ -1,7 +1,6 @@
 import bcrypt from 'bcrypt';
 import {query} from '../../db/db';
 import jwt from 'jsonwebtoken';
-import arg from "arg";
 
 
 const resolvers = {
