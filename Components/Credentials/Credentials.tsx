@@ -1,9 +1,10 @@
+import { CredentialsProps } from './credentialsProps'
 import * as SC from './styledCredentials'
 
-const Credentials : React.FC = ({ children }) => (
+const Credentials : React.FC<CredentialsProps> = ({ children, single }) => (
     <>
         <SC.StyledCredentials></SC.StyledCredentials>
-        <SC.StyledFormWrapper>
+        <SC.StyledFormWrapper single={single}>
             {children}
         </SC.StyledFormWrapper>
     </>

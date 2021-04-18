@@ -8,3 +8,12 @@ export const LOGIN_USER = gql`
         }
     }
 `
+
+export const ADD_TRAVEL = gql`
+    mutation AddTravel($email: String!, $password: String!) {
+        addTravel(email: $email, password: $password) {
+            refreshToken
+            accessToken
+    }
+}
+`

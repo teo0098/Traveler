@@ -1,4 +1,5 @@
 import styled, { StyledComponent } from 'styled-components'
+import { CredentialsProps } from './credentialsProps'
 
 export const StyledCredentials : StyledComponent<"div", any> = styled.div`
     background-image: url('/background.webp');
@@ -24,7 +25,7 @@ export const StyledCredentials : StyledComponent<"div", any> = styled.div`
     }
 `
 
-export const StyledFormWrapper : StyledComponent<"div", any> = styled.div`
+export const StyledFormWrapper : StyledComponent<"div", any, CredentialsProps> = styled.div<CredentialsProps>`
     background-color: ${({ theme }) => theme.colors.darkerLight};
     padding: 10px;
     width: 90%;
@@ -41,7 +42,7 @@ export const StyledFormWrapper : StyledComponent<"div", any> = styled.div`
 
     ${({ theme }) => theme.media.tablet} {
         transform: translateY(-110px);
-        grid-template-columns: 45% 45%;
+        grid-template-columns: ${({ single }) => single ? '100%' : '45% 45%'};
         justify-content: space-between;
         width: 90%;
         padding: 30px;

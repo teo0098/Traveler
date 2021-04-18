@@ -10,8 +10,9 @@ import { FormValues } from './formValues'
 import useSignin from '../customHooks/useSignin'
 import Loader from '../Loader/Loader'
 import Error from '../Error/Error'
+import { ThemeInterface } from '../../interfaces/themeInterface'
 
-const Signin : React.FC<{theme : {[key : string] : any}}> = ({ theme }) => {
+const Signin : React.FC<ThemeInterface> = ({ theme }) => {
 
     const router = useRouter()
     const { register, handleSubmit, formState: { errors } } = useForm<FormValues>()
