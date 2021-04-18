@@ -1,4 +1,4 @@
-import { gql } from 'apollo-server-micro'
+import { gql } from "apollo-server-micro";
 
 const typeDefs = gql`
   type User {
@@ -17,17 +17,24 @@ const typeDefs = gql`
     error: String!
   }
 
+  type VerifyPayload {
+    verifyHash: String!
+  }
+
   type LoginAuth {
     refreshToken: String!
     accessToken: String!
   }
 
   type Mutation {
-    registerUser(username: String!, password: String!, email: String!): AuthPayload
+    registerUser(
+      username: String!
+      password: String!
+      email: String!
+    ): AuthPayload
+    verifyUser(verifyHash: String!): VerifyPayload
     loginUser(email: String!, password: String!): LoginAuth
   }
-`
+`;
 
-
-
-export default typeDefs
+export default typeDefs;

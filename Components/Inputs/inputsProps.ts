@@ -1,8 +1,6 @@
 import { FieldError, UseFormRegister } from "react-hook-form";
 
-import { FormValues } from "../Signin/formValues";
-
-export interface InputsProps {
-    register: UseFormRegister<FormValues>;
-    error: FieldError | undefined;
+export interface InputsProps<Type> {
+  register: UseFormRegister<Type>;
+  error: FieldError | undefined;
 }
