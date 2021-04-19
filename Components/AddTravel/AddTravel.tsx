@@ -16,7 +16,8 @@ import * as SC from './styledAddTravel'
 const Signin : React.FC<{theme : {[key : string] : any}}> = ({ theme }) => {
 
     const { register, handleSubmit, formState: { errors } } = useForm<FormValues>()
-    const { handleOnSubmit, handleAddImage, state: { images, error: imagesError }, dispatch } = useAddTravel()
+    const { handleOnSubmit, handleAddImage, state: { images, error: imagesError }, dispatch,
+            addingStatus: { loading, error } } = useAddTravel()
 
     return (
         <Credentials single>
@@ -34,6 +35,8 @@ const Signin : React.FC<{theme : {[key : string] : any}}> = ({ theme }) => {
                         : null
                     }
                 </CredentialsSC.StyledInputsWrapper>
+                {loading ? <Loader /> : null}
+                {error ? <Error> {error.message} </Error> : null}
                 {imagesError ? <Error> {imagesError} </Error> : null}
                 <Button color={theme.colors.primary}>Dodaj wyprawę</Button>
             </CredentialsSC.StyledForm>

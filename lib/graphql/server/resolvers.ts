@@ -4,8 +4,9 @@ import validator from 'validator'
 import { UserInputError, AuthenticationError } from 'apollo-server-micro'
 
 import {query} from '../../db/db';
-import { UserType } from '../../types/types';
+import { AddTravelArgs, UserType } from '../../types/types';
 import { GlobalErrors, LoginErrors } from './errors';
+import { cloudinary } from '../../cloudinary/cloudinary'
 
 const resolvers = {
     Mutation: {
@@ -55,6 +56,17 @@ const resolvers = {
                     refreshToken,
                     accessToken
                 }
+            }
+            catch (e) {
+                throw new Error(e.message ? e.message : GlobalErrors.STH_WENT_WRONG)
+            }
+        },
+        addTravel: async (_ : unknown, args : AddTravelArgs) => {
+            try {
+                args.files.forEach(async file => {
+                    const uploadResult = await cloudinary.v2.uploader.upload(file.base64, { upload_preset: 'travels' })
+                })
+                return 'Podróż została dodana pomyślnie'
             }
             catch (e) {
                 throw new Error(e.message ? e.message : GlobalErrors.STH_WENT_WRONG)

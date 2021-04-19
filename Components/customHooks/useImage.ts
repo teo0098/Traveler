@@ -16,6 +16,8 @@ const useImage = (dispatchImages: Dispatch<Action>, imageIndex: number, images :
         try {
             if (!file.type.includes('image'))
                 throw new Error('Nie otrzymano zdjęcia')
+            if (file.size > 2097152)
+                throw new Error('Zdjęcie musi być mniejsze niż 2 MB')
             const reader = new FileReader();
             reader.onload = () => {
                 if (!reader.result)
@@ -23,6 +25,9 @@ const useImage = (dispatchImages: Dispatch<Action>, imageIndex: number, images :
                 if (!imageRef.current)
                     throw new Error('Nie można pobrać zdjęcia')
                 imageRef.current.src = reader.result as string
+                const newImages = [...images!]
+                newImages[imageIndex].base64 = reader.result as string
+                dispatchImages({ type: ImagesActionsTypes.UPDATE_IMAGES, images: newImages })
             }
             reader.readAsDataURL(file);
             return undefined
@@ -96,6 +101,7 @@ const useImage = (dispatchImages: Dispatch<Action>, imageIndex: number, images :
         inputFileRef.current!.value = ''
         const newImages = [...images!]
         newImages[imageIndex].file = null
+        newImages[imageIndex].base64 = null
         dispatchImages({ type: ImagesActionsTypes.UPDATE_IMAGES, images: newImages })
     }
 
@@ -104,6 +110,7 @@ const useImage = (dispatchImages: Dispatch<Action>, imageIndex: number, images :
         let newImages = [...images!]
         newImages[imageIndex].desc = null
         newImages[imageIndex].file = null
+        newImages[imageIndex].base64 = null
         newImages = newImages.filter((_, i: number) => i !== imageIndex)
         dispatchImages({ type: ImagesActionsTypes.UPDATE_IMAGES, images: newImages })
     }

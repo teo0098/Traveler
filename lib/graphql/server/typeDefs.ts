@@ -22,9 +22,15 @@ const typeDefs = gql`
     accessToken: String!
   }
 
+  input Files {
+    desc: String,
+    base64: String!
+  }
+
   type Mutation {
     registerUser(username: String!, password: String!, email: String!): AuthPayload
-    loginUser(email: String!, password: String!): LoginAuth
+    loginUser(email: String!, password: String!): LoginAuth!
+    addTravel(files: [Files!]!, name: String, description: String): String!
   }
 `
 
