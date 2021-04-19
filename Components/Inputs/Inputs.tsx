@@ -38,7 +38,7 @@ export const LoginPassword: React.FC<InputsProps<SigninFormValues>> = memo(
         type="password"
       />
     </SC.StyledInputWrapper>
-)
+))
 
 export const TravelName : React.FC<InputsProps<AddTravelFormValues>> = ({ register, error }) => (
     <SC.StyledInputWrapper>
@@ -65,8 +65,6 @@ export const ImageDesc : React.FC<ImageDescProps> = ({ name, dispatchDescChange,
         <SC.StyledLabel htmlFor={name}>Opis zdjęcia</SC.StyledLabel>
         <SC.StyledTextarea defaultValue={value ? value : ''} onBlur={e => dispatchDescChange(e.target.value)} border id={name}/>
     </SC.StyledInputWrapper>
-)
-  )
 );
 
 export const RegisterPassword: React.FC<InputsProps<SignupFormValues>> = memo(
