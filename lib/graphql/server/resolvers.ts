@@ -1,21 +1,12 @@
-<<<<<<< HEAD
-import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
 import validator from 'validator'
 import { UserInputError, AuthenticationError } from 'apollo-server-micro'
-
-import {query} from '../../db/db';
 import { UserType } from '../../types/types';
-import { GlobalErrors, LoginErrors } from './errors';
-=======
+import {ChangePasswordErrors, GlobalErrors, LoginErrors, VerifyErrors} from './errors';
 import bcrypt from "bcrypt";
 import { query } from "../../db/db";
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
 import nodemailer from "nodemailer";
-import { ChangePasswordErrors, GlobalErrors, VerifyErrors } from "./errors";
-import { UserType } from "../../types/types";
->>>>>>> damian-develop
 
 const resolvers = {
   Mutation: {
