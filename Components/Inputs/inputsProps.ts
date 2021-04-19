@@ -4,3 +4,4 @@ export interface InputsProps<Type> {
     register: UseFormRegister<Type>;
     error: FieldError | undefined;
 }
+
