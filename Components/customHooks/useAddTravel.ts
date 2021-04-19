@@ -14,7 +14,13 @@ const useAddTravel = () => {
     }
 
     const handleOnSubmit = (data : {}) => {
-        console.log(state.images)
+        const imagesAmount = state.images?.reduce((accumulator: number, currentValue) => {
+            if (currentValue.file !== null) accumulator++
+            return accumulator
+        }, 0)
+        if (imagesAmount === 0) {
+            return dispatch({ type: ImagesActionsTypes.ERROR, error: 'Wgraj przynajmniej jedno zdjęcie aby dodać podróż' })
+        }
     }
 
     return { handleOnSubmit, handleAddImage, state, dispatch }

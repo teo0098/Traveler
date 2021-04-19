@@ -74,13 +74,13 @@ const useImage = (dispatchImages: Dispatch<Action>, imageIndex: number, images :
 
     const handleOnChange = () => {
         try {
-            if (!inputFileRef.current?.files || inputFileRef.current?.files[0] === undefined)
-                throw new Error('Nie otrzymano zdjęcia')
-            const file = getFile(inputFileRef.current.files[0])
-            if (file !== undefined)
-                throw new Error(file)
-            dispatch({ type: ImageActionsTypes.UPLOAD_IMAGE, file: inputFileRef.current.files[0] })
-            dispatchFileChange(inputFileRef.current.files[0])
+            if (inputFileRef.current?.files && inputFileRef.current?.files[0] !== undefined) {
+                const file = getFile(inputFileRef.current.files[0])
+                if (file !== undefined)
+                    throw new Error(file)
+                dispatch({ type: ImageActionsTypes.UPLOAD_IMAGE, file: inputFileRef.current.files[0] })
+                dispatchFileChange(inputFileRef.current.files[0])
+            }
         }
         catch (e) {
             dispatch({ type: ImageActionsTypes.ERROR, error: e.message })
