@@ -9,3 +9,8 @@ export enum GlobalErrors {
 export enum VerifyErrors {
   INVALID_HASH = "Błędny link aktywacyjny",
 }
+
+export enum ChangePasswordErrors {
+  INVALID_PASSWORD = "Podane hasło jest nieprawidłowe!",
+  INVALID_NEW_PASSWORD = "Password must contains at least: 8 characters, 1 uppercase & lowercase & number and special character",
+}

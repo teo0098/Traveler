@@ -34,6 +34,14 @@ const typeDefs = gql`
     ): AuthPayload
     verifyUser(verifyHash: String!): VerifyPayload
     loginUser(email: String!, password: String!): LoginAuth
+
+    editPassword(
+      email: String!
+      currentPassword: String!
+      newPassword: String!
+    ): LoginAuth
+
+    editUsername(email: String!, newUsername: String!): LoginAuth
   }
 `;
 

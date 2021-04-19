@@ -2,11 +2,12 @@ import Head from "next/head";
 import useVerify from "../Components/customHooks/useVerify";
 import { useEffect } from "react";
 import Error from "../Components/Error/Error";
+import Loader from "../Components/Loader/Loader";
 
 const Verify: React.FC = () => {
   const {
     handleOnSubmit,
-    verifyStatus: { error },
+    verifyStatus: { loading, error },
   } = useVerify();
 
   useEffect(() => {
@@ -21,8 +22,9 @@ const Verify: React.FC = () => {
     <>
       <Head>
         <title>Traveler | Weryfikacja</title>
-        {error ? <Error> {error.message} </Error> : null}
       </Head>
+      {loading ? <Loader /> : null}
+      {error ? <Error> {error.message} </Error> : null}
     </>
   );
 };

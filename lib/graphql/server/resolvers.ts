@@ -3,7 +3,8 @@ import { query } from "../../db/db";
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
 import nodemailer from "nodemailer";
-import { GlobalErrors, VerifyErrors } from "./errors";
+import { ChangePasswordErrors, GlobalErrors, VerifyErrors } from "./errors";
+import { UserType } from "../../types/types";
 
 const resolvers = {
   Mutation: {
@@ -78,26 +79,64 @@ const resolvers = {
         await query("SELECT user_id FROM users_verified WHERE hash = ?", [
           args.verifyHash,
         ]).then(async (res) => {
-          if (res.length == 0) {
-            throw new Error(VerifyErrors.INVALID_HASH);
-          } else {
-            await query("UPDATE users SET verified = 1 WHERE id = ?", [
-              res[0].user_id,
-            ]).then(async (res) => {
-              await query(
-                "DELETE FROM users_verified WHERE hash = ?",
-                args.verifyHash
-              );
-            });
-          }
+          await query("UPDATE users SET verified = 1 WHERE id = ?", [
+            res[0].user_id,
+          ]).then(async () => {
+            await query(
+              "DELETE FROM users_verified WHERE hash = ?",
+              args.verifyHash
+            );
+          });
         });
         return {
           verifyHash: args.verifyHash,
         };
       } catch (e) {
         e.message ? e.message : GlobalErrors.STH_WENT_WRONG;
-        throw new Error();
+        throw new Error(VerifyErrors.INVALID_HASH);
       }
+    },
+    editUsername: async (
+      _: unknown,
+      args: { email: string; newUsername: string }
+    ) => {
+      try {
+        await query("UPDATE users SET username = ? WHERE email = ?", [
+          args.newUsername,
+          args.email,
+        ]);
+      } catch (e) {
+        e.message ? e.message : GlobalErrors.STH_WENT_WRONG;
+        throw new Error(GlobalErrors.STH_WENT_WRONG);
+      }
+    },
+    editPassword: async (
+      _: unknown,
+      args: { email: string; currentPassword: string; newPassword: string }
+    ) => {
+      try {
+        const user = await query(
+          "SELECT id, password FROM users WHERE email = ? AND verified = 1",
+          [args.email]
+        );
+        if (
+          !bcrypt.compare(args.currentPassword, (user[0] as UserType).password)
+        )
+          throw new Error(ChangePasswordErrors.INVALID_PASSWORD);
+        else {
+          let passwordRegex = new RegExp(
+            "(?=[A-Za-z0-9@#$%^&+!=]+$)^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[@#$%^&+!=])(?=.{8,}).*$"
+          );
+
+          if (passwordRegex.test(args.newPassword)) {
+            const hashedPassword = await bcrypt.hash(args.newPassword, 10);
+            await query("UPDATE users SET password = ? WHERE email = ?", [
+              hashedPassword,
+              args.email,
+            ]);
+          } else throw new Error(ChangePasswordErrors.INVALID_NEW_PASSWORD);
+        }
+      } catch (e) {}
     },
   },
 };
