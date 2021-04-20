@@ -10,7 +10,7 @@ export const LOGIN_USER = gql`
 `
 
 export const ADD_TRAVEL = gql`
-    mutation AddTravel($files: [Files!]!, $name: String, $description: String) {
-        addTravel(files: $files, name: $name, description: $description)
+    mutation AddTravel($files: [Files!]!, $refreshToken: String, $travel: Travel!) {
+        addTravel(files: $files, refreshToken: $refreshToken, travel: $travel)
     }
 `

@@ -9,6 +9,10 @@ export type UserType = {
 
 export type AddTravelArgs = {
     files: Array<{desc: string | undefined | null, base64: string}>, 
-    name: string | undefined | null, 
-    description: string | undefined | null 
+    refreshToken: string | undefined,
+    travel: {
+        name: string | undefined | null,
+        description: string | undefined | null,
+        private: boolean
+    }
 }

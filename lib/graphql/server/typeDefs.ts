@@ -27,10 +27,16 @@ const typeDefs = gql`
     base64: String!
   }
 
+  input Travel {
+    name: String
+    description: String
+    private: Boolean!
+  }
+
   type Mutation {
     registerUser(username: String!, password: String!, email: String!): AuthPayload
     loginUser(email: String!, password: String!): LoginAuth!
-    addTravel(files: [Files!]!, name: String, description: String): String!
+    addTravel(files: [Files!]!, refreshToken: String, travel: Travel!): String!
   }
 `
 

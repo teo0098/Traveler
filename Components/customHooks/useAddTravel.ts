@@ -1,4 +1,4 @@
-import { useEffect, useReducer } from 'react';
+import { useReducer } from 'react';
 import { useMutation } from "@apollo/client"
 
 import { ImagesActionsTypes } from '../../useReducers/imagesReducer/imagesActionsTypes';
@@ -14,11 +14,7 @@ const useAddTravel = () => {
         dispatch({ type: ImagesActionsTypes.UPDATE_IMAGES, images: [...state.images!, {file: null, desc: null, base64: null}] })
     }
 
-    useEffect(() => {
-        console.log(addingStatus.data)
-    }, [addingStatus.data])
-
-    const handleOnSubmit = ({ travelName, travelDesc } : { travelName: string | undefined, travelDesc: string | undefined }) => {
+    const handleOnSubmit = ({ travelName, travelDesc, travelPrivate } : { travelName: string | undefined, travelDesc: string | undefined, travelPrivate: string | undefined }) => {
         const imagesAmount = state.images?.reduce((accumulator: number, currentValue) => {
             if (currentValue.file !== null) accumulator++
             return accumulator
@@ -30,8 +26,12 @@ const useAddTravel = () => {
         addTravel({
             variables: {
                 files,
-                name: travelName,
-                description: travelDesc
+                refreshToken: localStorage.getItem('refreshToken'),
+                travel: {
+                    name: travelName,
+                    description: travelDesc,
+                    private: travelPrivate
+                }
             }
         })
     }

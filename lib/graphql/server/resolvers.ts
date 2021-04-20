@@ -1,12 +1,13 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import validator from 'validator'
-import { UserInputError, AuthenticationError } from 'apollo-server-micro'
+import { UserInputError, AuthenticationError, ForbiddenError } from 'apollo-server-micro'
 
 import {query} from '../../db/db';
 import { AddTravelArgs, UserType } from '../../types/types';
 import { GlobalErrors, LoginErrors } from './errors';
 import { cloudinary } from '../../cloudinary/cloudinary'
+import { VerifyToken } from '../../interfaces/VerifyToken';
 
 const resolvers = {
     Mutation: {
@@ -63,9 +64,20 @@ const resolvers = {
         },
         addTravel: async (_ : unknown, args : AddTravelArgs) => {
             try {
-                args.files.forEach(async file => {
+                if (!args.refreshToken) throw new ForbiddenError(LoginErrors.WRONG_CREDENTIALS)
+                const refreshToken = jwt.verify(args.refreshToken, `${process.env.REFRESH_TOKEN_SECRET}`)
+                const id = (refreshToken as VerifyToken).id
+                const user = await query('SELECT id FROM users WHERE id = ? AND verified = 1', [id])
+                if (user.length === 0) throw new AuthenticationError(LoginErrors.WRONG_CREDENTIALS)
+                const travelPrivate: number = args.travel.private ? 1 : 0
+                const insertTravel = await query('INSERT INTO travels VALUES (NULL, ?, ?, ?, ?)', [args.travel.name, args.travel.description, id, travelPrivate])
+                if (insertTravel.affectedRows !== 1) throw new Error()
+                const travel = await query('SELECT id from travels WHERE user_id = ?', [id])
+                if (travel.length === 0) throw new Error()
+                for (let file of args.files) {
                     const uploadResult = await cloudinary.v2.uploader.upload(file.base64, { upload_preset: 'travels' })
-                })
+                    await query('INSERT INTO travel_images VALUES (NULL, ?, ?, ?)', [travel[0].id, uploadResult.url, file.desc])
+                }
                 return 'Podróż została dodana pomyślnie'
             }
             catch (e) {

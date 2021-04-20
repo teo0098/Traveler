@@ -26,7 +26,10 @@ export const LoginPassword : React.FC<InputsProps<SigninFormValues>> = ({ regist
 export const TravelName : React.FC<InputsProps<AddTravelFormValues>> = ({ register, error }) => (
     <SC.StyledInputWrapper>
         <SC.StyledLabel error={error} htmlFor='travelName'>{error ? error.message : 'Nazwa'}</SC.StyledLabel>
-        <SC.StyledInput placeholder='W nieznane...' {...register('travelName')} id='travelName' type='text' />
+        <SC.StyledInput placeholder='W nieznane...' {...register('travelName', { validate: (value: string) => {
+            if (value.trim().length > 50) return 'Nazwa musi zawierać maksymalnie 50 znaków'
+            return undefined
+        }})} id='travelName' type='text' />
     </SC.StyledInputWrapper>
 )
 
@@ -48,4 +51,11 @@ export const ImageDesc : React.FC<ImageDescProps> = ({ name, dispatchDescChange,
         <SC.StyledLabel htmlFor={name}>Opis zdjęcia</SC.StyledLabel>
         <SC.StyledTextarea defaultValue={value ? value : ''} onBlur={e => dispatchDescChange(e.target.value)} border id={name}></SC.StyledTextarea>
     </SC.StyledInputWrapper>
+)
+
+export const TravelVisibility : React.FC<InputsProps<AddTravelFormValues>> = ({ register }) => (
+    <SC.StyledVisibility>
+        <SC.StyledCheckboxLabel htmlFor='travelPrivate'>Ta podróż ma być widoczna tylko dla mnie</SC.StyledCheckboxLabel>
+        <SC.StyledCheckbox type='checkbox' {...register('travelPrivate')} id='travelPrivate' />
+    </SC.StyledVisibility>
 )

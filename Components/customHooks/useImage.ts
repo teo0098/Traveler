@@ -16,8 +16,8 @@ const useImage = (dispatchImages: Dispatch<Action>, imageIndex: number, images :
         try {
             if (!file.type.includes('image'))
                 throw new Error('Nie otrzymano zdjęcia')
-            if (file.size > 2097152)
-                throw new Error('Zdjęcie musi być mniejsze niż 2 MB')
+            if (file.size > 5242880)
+                throw new Error('Zdjęcie musi być mniejsze niż 5 MB')
             const reader = new FileReader();
             reader.onload = () => {
                 if (!reader.result)

@@ -38,3 +38,24 @@ export const StyledTextarea : StyledComponent<"textarea", any, StyledTextareaPro
     resize: none;
     border: ${({ theme, border }) => border ? `1px solid ${theme.colors.dark}` : 'none'};
 `
+
+export const StyledVisibility : StyledComponent<"div", any> = styled.div`
+    margin: 10px 0;
+    display: flex;
+    align-items: center;
+`
+
+export const StyledCheckboxLabel : StyledComponent<"label", any> = styled(StyledLabel)`
+    cursor: pointer;
+`
+
+export const StyledCheckbox : StyledComponent<"input", any> = styled.input`
+    height: 30px;
+    width: 30px;
+    margin: 0 10px;
+
+    ${({ theme }) => theme.media.largePhone} {
+        height: 25px;
+        width: 25px;
+    }
+`
