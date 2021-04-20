@@ -9,7 +9,7 @@ export const db = mysql({
   }
 })
 
-export async function query(q: string, values: (string | number)[] | string | number = []) {
+export async function query(q: string, values: Array<any> = []) {
   try {
     const results = await db.query(q, values)
     await db.end()

@@ -3,5 +3,5 @@ export enum LoginErrors {
 }
 
 export enum GlobalErrors {
-    STH_WENT_WRONG = 'Something went wrong... Please try again later'
+    STH_WENT_WRONG = 'Coś poszło nie tak... Spróbuj ponownie za jakiś czas'
 }

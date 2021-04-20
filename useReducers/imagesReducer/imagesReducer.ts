@@ -3,7 +3,7 @@ import { ImagesActionsTypes } from "./imagesActionsTypes"
 
 export const initialState = {
     error: '',
-    images: [{ file: null, desc: null }]
+    images: [{ file: null, desc: null, base64: null }]
 }
 
 export type State = {
