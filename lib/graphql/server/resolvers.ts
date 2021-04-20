@@ -1,40 +1,149 @@
-import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
 import validator from 'validator'
 import { UserInputError, AuthenticationError, ForbiddenError } from 'apollo-server-micro'
 
-import {query} from '../../db/db';
 import { AddTravelArgs, UserType } from '../../types/types';
-import { GlobalErrors, LoginErrors } from './errors';
 import { cloudinary } from '../../cloudinary/cloudinary'
 import { VerifyToken } from '../../interfaces/VerifyToken';
+import {ChangePasswordErrors, GlobalErrors, LoginErrors, VerifyErrors} from './errors';
+import bcrypt from "bcrypt";
+import { query } from "../../db/db";
+import jwt from "jsonwebtoken";
+import crypto from "crypto";
+import nodemailer from "nodemailer";
 
 const resolvers = {
-    Mutation: {
-        registerUser: async (root: {}, args: { password: string; username: string; email: string }, context: {}, info: {}) => {
-            const SECRET: string = process.env.SECRET!;
-            const token = jwt.sign({username: args.username}, SECRET);
-            let passwordRegex = new RegExp("(?=[A-Za-z0-9@#$%^&+!=]+$)^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[@#$%^&+!=])(?=.{8,}).*$");
-            let hashedPassword = "";
+  Mutation: {
+    registerUser: async (
+      _: unknown,
+      args: {
+        password: string;
+        username: string;
+        email: string;
+      }
+    ) => {
+      const SECRET: string = process.env.SECRET!;
+      const token = jwt.sign({ username: args.username }, SECRET);
+      let passwordRegex = new RegExp(
+        "(?=[A-Za-z0-9@#$%^&+!=]+$)^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[@#$%^&+!=])(?=.{8,}).*$"
+      );
+      let hashedPassword = "";
 
-            if (passwordRegex.test(args.password))
-                hashedPassword = await bcrypt.hash(args.password, 10);
-            else
-                throw new Error("Password must contains at least: 8 characters, 1 uppercase & lowercase & number and special character");
+      if (passwordRegex.test(args.password))
+        hashedPassword = await bcrypt.hash(args.password, 10);
+      else
+        throw new Error(
+          "Password must contains at least: 8 characters, 1 uppercase & lowercase & number and special character"
+        );
 
-            await query('SELECT username FROM users WHERE username = ?', [args.username]).then(res => {
-                if (res.length > 0) {
-                    throw new Error(
-                        "User exists!"
-                    );
-                }
-            })
-            await query('INSERT INTO users (username, password, email) VALUES (?,?,?)', [args.username, hashedPassword, args.email])
-            return {
-                token
-            };
+      await query("SELECT username FROM users WHERE username = ?", [
+        args.username,
+      ]).then((res) => {
+        if (res.length > 0) {
+          throw new Error("User exists!");
+        }
+      });
+      await query(
+        "INSERT INTO users (username, password, email) VALUES (?,?,?)",
+        [args.username, hashedPassword, args.email]
+      ).then(async (res) => {
+        const verifyHash = crypto.randomBytes(128).toString("hex");
+        const userID = res.insertId;
+        await query("INSERT INTO users_verified (user_id, hash) VALUES (?,?)", [
+          userID,
+          verifyHash,
+        ]);
 
-        },
+        let transporter = nodemailer.createTransport({
+          host: process.env.SMTP_HOST,
+          port: 25,
+          secure: false,
+          auth: {
+            user: process.env.SMTP_USER,
+            pass: process.env.SMTP_PASSWORD,
+          },
+        });
+        await transporter
+          .sendMail({
+            from: "administracja@email.com",
+            to: args.email,
+            subject: "Cześć! " + args.username + " potwierdź swój email",
+            text:
+              "Kliknij w ten link: http://localhost:3000/verify?code=" +
+              verifyHash,
+          })
+          .then((res) => {
+            console.log(res); //Walidacja
+          });
+      });
+      return {
+        token,
+      };
+    },
+    verifyUser: async (_: unknown, args: { verifyHash: string }) => {
+      try {
+        await query("SELECT user_id FROM users_verified WHERE hash = ?", [
+          args.verifyHash,
+        ]).then(async (res) => {
+          await query("UPDATE users SET verified = 1 WHERE id = ?", [
+            res[0].user_id,
+          ]).then(async () => {
+            await query(
+              "DELETE FROM users_verified WHERE hash = ?",
+              [args.verifyHash]
+            );
+          });
+        });
+        return {
+          verifyHash: args.verifyHash,
+        };
+      } catch (e) {
+        e.message ? e.message : GlobalErrors.STH_WENT_WRONG;
+        throw new Error(VerifyErrors.INVALID_HASH);
+      }
+    },
+    editUsername: async (
+      _: unknown,
+      args: { email: string; newUsername: string }
+    ) => {
+      try {
+        await query("UPDATE users SET username = ? WHERE email = ?", [
+          args.newUsername,
+          args.email,
+        ]);
+      } catch (e) {
+        e.message ? e.message : GlobalErrors.STH_WENT_WRONG;
+        throw new Error(GlobalErrors.STH_WENT_WRONG);
+      }
+    },
+    editPassword: async (
+      _: unknown,
+      args: { email: string; currentPassword: string; newPassword: string }
+    ) => {
+        try {
+            const user = await query(
+                "SELECT id, password FROM users WHERE email = ? AND verified = 1",
+                [args.email]
+            );
+            if (
+                !bcrypt.compare(args.currentPassword, (user[0] as UserType).password)
+            )
+                throw new Error(ChangePasswordErrors.INVALID_PASSWORD);
+            else {
+                let passwordRegex = new RegExp(
+                    "(?=[A-Za-z0-9@#$%^&+!=]+$)^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[@#$%^&+!=])(?=.{8,}).*$"
+                );
+                if (passwordRegex.test(args.newPassword)) {
+                    const hashedPassword = await bcrypt.hash(args.newPassword, 10);
+                    await query("UPDATE users SET password = ? WHERE email = ?", [
+                        hashedPassword,
+                        args.email,
+                    ]);
+                } else throw new Error(ChangePasswordErrors.INVALID_NEW_PASSWORD);
+            }
+        } catch (e) {
+
+        }
+    },
         loginUser: async (_ : unknown, args: { email : string, password: string }) => {
             try {
                 const regex = /(?=[A-Za-z0-9@#$%^&+!=]+$)^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[@#$%^&+!=])(?=.{8,}).*$/
@@ -87,4 +196,4 @@ const resolvers = {
     }
 }
 
-export default resolvers
+export default resolvers;
