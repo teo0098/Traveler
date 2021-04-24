@@ -1,10 +1,19 @@
-import validator from 'validator'
-import { UserInputError, AuthenticationError, ForbiddenError } from 'apollo-server-micro'
+import validator from "validator";
+import {
+  UserInputError,
+  AuthenticationError,
+  ForbiddenError,
+} from "apollo-server-micro";
 
-import { AddTravelArgs, UserType } from '../../types/types';
-import { cloudinary } from '../../cloudinary/cloudinary'
-import { VerifyToken } from '../../interfaces/VerifyToken';
-import {ChangePasswordErrors, GlobalErrors, LoginErrors, VerifyErrors} from './errors';
+import { AddTravelArgs, UserType } from "../../types/types";
+import { cloudinary } from "../../cloudinary/cloudinary";
+import { VerifyToken } from "../../interfaces/VerifyToken";
+import {
+  ChangePasswordErrors,
+  GlobalErrors,
+  LoginErrors,
+  VerifyErrors,
+} from "./errors";
 import bcrypt from "bcrypt";
 import { query } from "../../db/db";
 import jwt from "jsonwebtoken";
@@ -87,10 +96,9 @@ const resolvers = {
           await query("UPDATE users SET verified = 1 WHERE id = ?", [
             res[0].user_id,
           ]).then(async () => {
-            await query(
-              "DELETE FROM users_verified WHERE hash = ?",
-              [args.verifyHash]
-            );
+            await query("DELETE FROM users_verified WHERE hash = ?", [
+              args.verifyHash,
+            ]);
           });
         });
         return {
@@ -117,83 +125,134 @@ const resolvers = {
     },
     editPassword: async (
       _: unknown,
-      args: { email: string; currentPassword: string; newPassword: string }
+      args: {
+        email: string;
+        currentPassword: string;
+        newPassword: string;
+      }
     ) => {
-        try {
-            const user = await query(
-                "SELECT id, password FROM users WHERE email = ? AND verified = 1",
-                [args.email]
-            );
-            if (
-                !bcrypt.compare(args.currentPassword, (user[0] as UserType).password)
-            )
-                throw new Error(ChangePasswordErrors.INVALID_PASSWORD);
-            else {
-                let passwordRegex = new RegExp(
-                    "(?=[A-Za-z0-9@#$%^&+!=]+$)^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[@#$%^&+!=])(?=.{8,}).*$"
-                );
-                if (passwordRegex.test(args.newPassword)) {
-                    const hashedPassword = await bcrypt.hash(args.newPassword, 10);
-                    await query("UPDATE users SET password = ? WHERE email = ?", [
-                        hashedPassword,
-                        args.email,
-                    ]);
-                } else throw new Error(ChangePasswordErrors.INVALID_NEW_PASSWORD);
-            }
-        } catch (e) {
-
+      try {
+        const user = await query(
+          "SELECT id, password FROM users WHERE email = ? AND verified = 1",
+          [args.email]
+        );
+        if (
+          !bcrypt.compare(args.currentPassword, (user[0] as UserType).password)
+        )
+          throw new Error(ChangePasswordErrors.INVALID_PASSWORD);
+        else {
+          let passwordRegex = new RegExp(
+            "(?=[A-Za-z0-9@#$%^&+!=]+$)^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[@#$%^&+!=])(?=.{8,}).*$"
+          );
+          if (passwordRegex.test(args.newPassword)) {
+            const hashedPassword = await bcrypt.hash(args.newPassword, 10);
+            await query("UPDATE users SET password = ? WHERE email = ?", [
+              hashedPassword,
+              args.email,
+            ]);
+          } else throw new Error(ChangePasswordErrors.INVALID_NEW_PASSWORD);
         }
+      } catch (e) {}
     },
-        loginUser: async (_ : unknown, args: { email : string, password: string }) => {
-            try {
-                const regex = /(?=[A-Za-z0-9@#$%^&+!=]+$)^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[@#$%^&+!=])(?=.{8,}).*$/
-                if (!validator.isEmail(args.email) || !regex.test(args.password))
-                    throw new UserInputError(LoginErrors.WRONG_CREDENTIALS)
-                
-                const user = await query('SELECT id, password FROM users WHERE email = ? AND verified = 1', [args.email])
-                if (user.length === 0) throw new AuthenticationError(LoginErrors.WRONG_CREDENTIALS)
+    loginUser: async (
+      _: unknown,
+      args: { email: string; password: string }
+    ) => {
+      try {
+        const regex = /(?=[A-Za-z0-9@#$%^&+!=]+$)^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[@#$%^&+!=])(?=.{8,}).*$/;
+        if (!validator.isEmail(args.email) || !regex.test(args.password))
+          throw new UserInputError(LoginErrors.WRONG_CREDENTIALS);
 
-                const match = await bcrypt.compare(args.password, (user[0] as UserType).password)
-                if (!match) throw new AuthenticationError(LoginErrors.WRONG_CREDENTIALS)
+        const user = await query(
+          "SELECT id, password FROM users WHERE email = ? AND verified = 1",
+          [args.email]
+        );
+        if (user.length === 0)
+          throw new AuthenticationError(LoginErrors.WRONG_CREDENTIALS);
 
-                const refreshToken = jwt.sign({ id: (user[0] as UserType).id }, `${process.env.REFRESH_TOKEN_SECRET}`)
-                const accessToken = jwt.sign({ id: (user[0] as UserType).id }, `${process.env.ACCESS_TOKEN_SECRET}`, { expiresIn: '5m' })
+        const match = await bcrypt.compare(
+          args.password,
+          (user[0] as UserType).password
+        );
+        if (!match)
+          throw new AuthenticationError(LoginErrors.WRONG_CREDENTIALS);
 
-                const insertRefreshToken = await query('INSERT INTO refresh_tokens VALUES (NULL, ?, ?)', [refreshToken, (user[0] as UserType).id])
-                if (insertRefreshToken.affectedRows !== 1) throw new Error()
+        const refreshToken = jwt.sign(
+          { id: (user[0] as UserType).id },
+          `${process.env.REFRESH_TOKEN_SECRET}`
+        );
+        const accessToken = jwt.sign(
+          { id: (user[0] as UserType).id },
+          `${process.env.ACCESS_TOKEN_SECRET}`,
+          { expiresIn: "5m" }
+        );
 
-                return {
-                    refreshToken,
-                    accessToken
-                }
-            }
-            catch (e) {
-                throw new Error(e.message ? e.message : GlobalErrors.STH_WENT_WRONG)
-            }
-        },
-        addTravel: async (_ : unknown, args : AddTravelArgs) => {
-            try {
-                if (!args.refreshToken) throw new ForbiddenError(LoginErrors.WRONG_CREDENTIALS)
-                const refreshToken = jwt.verify(args.refreshToken, `${process.env.REFRESH_TOKEN_SECRET}`)
-                const id = (refreshToken as VerifyToken).id
-                const user = await query('SELECT id FROM users WHERE id = ? AND verified = 1', [id])
-                if (user.length === 0) throw new AuthenticationError(LoginErrors.WRONG_CREDENTIALS)
-                const travelPrivate: number = args.travel.private ? 1 : 0
-                const insertTravel = await query('INSERT INTO travels VALUES (NULL, ?, ?, ?, ?)', [args.travel.name, args.travel.description, id, travelPrivate])
-                if (insertTravel.affectedRows !== 1) throw new Error()
-                const travel = await query('SELECT id from travels WHERE user_id = ?', [id])
-                if (travel.length === 0) throw new Error()
-                for (let file of args.files) {
-                    const uploadResult = await cloudinary.v2.uploader.upload(file.base64, { upload_preset: 'travels' })
-                    await query('INSERT INTO travel_images VALUES (NULL, ?, ?, ?)', [travel[0].id, uploadResult.url, file.desc])
-                }
-                return 'Podróż została dodana pomyślnie'
-            }
-            catch (e) {
-                throw new Error(e.message ? e.message : GlobalErrors.STH_WENT_WRONG)
-            }
+        const insertRefreshToken = await query(
+          "INSERT INTO refresh_tokens VALUES (NULL, ?, ?)",
+          [refreshToken, (user[0] as UserType).id]
+        );
+        if (insertRefreshToken.affectedRows !== 1) throw new Error();
+
+        return {
+          refreshToken,
+          accessToken,
+        };
+      } catch (e) {
+        throw new Error(e.message ? e.message : GlobalErrors.STH_WENT_WRONG);
+      }
+    },
+    addTravel: async (_: unknown, args: AddTravelArgs) => {
+      try {
+        if (!args.refreshToken)
+          throw new ForbiddenError(LoginErrors.WRONG_CREDENTIALS);
+        const refreshToken = jwt.verify(
+          args.refreshToken,
+          `${process.env.REFRESH_TOKEN_SECRET}`
+        );
+        const id = (refreshToken as VerifyToken).id;
+        const user = await query(
+          "SELECT id FROM users WHERE id = ? AND verified = 1",
+          [id]
+        );
+        if (user.length === 0)
+          throw new AuthenticationError(LoginErrors.WRONG_CREDENTIALS);
+        const travelPrivate: number = args.travel.private ? 1 : 0;
+        const hash = crypto.randomBytes(20).toString("hex");
+        const insertTravel = await query(
+          "INSERT INTO travels (id, name, description, user_id, private, hash, payAttention, startTime, endTime) VALUES (NULL, ?, ?, ?, ?, ?, ?, ?, ?)",
+          [
+            args.travel.name,
+            args.travel.description,
+            id,
+            travelPrivate,
+            hash,
+            args.travel.payAtention,
+            args.travel.startTime,
+            args.travel.endTime,
+          ]
+        );
+        if (insertTravel.affectedRows !== 1) throw new Error();
+        const travel = await query("SELECT id from travels WHERE hash = ?", [
+          hash,
+        ]);
+        if (travel.length === 0) throw new Error();
+        for (let file of args.files) {
+          const uploadResult = await cloudinary.v2.uploader.upload(
+            file.base64,
+            { upload_preset: "travels" }
+          );
+          await query("INSERT INTO travel_images VALUES (NULL, ?, ?, ?)", [
+            travel[0].id,
+            uploadResult.url,
+            file.desc,
+          ]);
         }
-    }
-}
+        return "Podróż została dodana pomyślnie";
+      } catch (e) {
+        throw new Error(e.message ? e.message : GlobalErrors.STH_WENT_WRONG);
+      }
+    },
+  },
+};
 
 export default resolvers;

@@ -27,7 +27,7 @@ const typeDefs = gql`
   }
 
   input Files {
-    desc: String,
+    desc: String
     base64: String!
   }
 
@@ -35,6 +35,9 @@ const typeDefs = gql`
     name: String
     description: String
     private: Boolean!
+    payAtention: String
+    startTime: String
+    endTime: String
   }
 
   type Mutation {
