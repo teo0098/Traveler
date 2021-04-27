@@ -37,7 +37,7 @@ const useSearchUsers = (
   const handleOnBlur = () => {
     setTimeout(() => {
       setSearch("");
-    }, 50);
+    }, 100);
   };
 
   const handleOnUntagUser = (user: { id: number; username: string }) => {

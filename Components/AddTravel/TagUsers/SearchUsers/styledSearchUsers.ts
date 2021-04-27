@@ -15,6 +15,7 @@ export const StyledSection: StyledComponent<"section", any> = styled.section`
   padding: 10px;
   border-bottom: ${({ theme }) => `1px solid ${theme.colors.dark}`};
   width: 100%;
+  cursor: pointer;
 `;
 
 export const StyledUsers: StyledComponent<"div", any> = styled.div`
@@ -49,4 +50,8 @@ export const StyledUser: StyledComponent<"section", any> = styled.section`
 export const StyledUserName: StyledComponent<"span", any> = styled.span`
   font-weight: bold;
   margin-right: 3px;
+`;
+
+export const StyledSpace: StyledComponent<"div", any> = styled.div`
+  margin: 10px 0;
 `;

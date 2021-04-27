@@ -63,22 +63,28 @@ const AddTravel: React.FC<ThemeInterface> = ({ theme }) => {
             register={register}
             error={errors.travelPayAttention}
           />
-          <TravelStartTime register={register} />
-          <TravelEndTime register={register} />
-          <TagUsers>
-            <SearchUsers users={users} dispatchImages={dispatch} />
-          </TagUsers>
-          <TravelVisibility register={register} />
+          <SC.StyledDateUsers>
+            <SC.StyledDate>
+              <TravelStartTime register={register} />
+              <TravelEndTime register={register} />
+              <TravelVisibility register={register} />
+            </SC.StyledDate>
+            <TagUsers>
+              <SearchUsers users={users} dispatchImages={dispatch} />
+            </TagUsers>
+          </SC.StyledDateUsers>
         </CredentialsSC.StyledInputsWrapper>
         {loading ? <Loader /> : null}
-        {error ? <Error> {error.message} </Error> : null}
-        {imagesError ? <Error> {imagesError} </Error> : null}
-        {!error && !loading && !imagesError && called ? (
-          <Success> {data.addTravel} </Success>
-        ) : null}
-        <Button disabled={loading} color={theme.colors.primary}>
-          Dodaj wyprawę
-        </Button>
+        <SC.StyledStatus>
+          {error ? <Error> {error.message} </Error> : null}
+          {imagesError ? <Error> {imagesError} </Error> : null}
+          {!error && !loading && !imagesError && called ? (
+            <Success> {data.addTravel} </Success>
+          ) : null}
+          <Button disabled={loading} color={theme.colors.primary}>
+            Dodaj wyprawę
+          </Button>
+        </SC.StyledStatus>
       </CredentialsSC.StyledForm>
     </Credentials>
   );

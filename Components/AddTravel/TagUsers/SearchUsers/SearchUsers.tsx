@@ -24,12 +24,16 @@ const SearchUsers: React.FC<SearchUsersProps> = ({ users, dispatchImages }) => {
       <SC.StyledResults>
         {loading ? (
           <SC.StyledUsers>
-            <Loader />
+            <SC.StyledSpace>
+              <Loader />
+            </SC.StyledSpace>
           </SC.StyledUsers>
         ) : null}
-        {error ? (
+        {error && search.trim().length > 2 ? (
           <SC.StyledUsers>
-            <Error> {error.message} </Error>
+            <SC.StyledSpace>
+              <Error> {error.message} </Error>
+            </SC.StyledSpace>
           </SC.StyledUsers>
         ) : null}
         {!error &&
@@ -52,7 +56,10 @@ const SearchUsers: React.FC<SearchUsersProps> = ({ users, dispatchImages }) => {
           {users?.map((user, index: number) => (
             <SC.StyledUser key={index}>
               <SC.StyledUserName> {user.username} </SC.StyledUserName>
-              <XCircle onClick={() => handleOnUntagUser(user)} />
+              <XCircle
+                style={{ cursor: "pointer" }}
+                onClick={() => handleOnUntagUser(user)}
+              />
             </SC.StyledUser>
           ))}
         </SC.StyledPickedUsers>
