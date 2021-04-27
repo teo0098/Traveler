@@ -8,8 +8,14 @@ const typeDefs = gql`
     password: String!
   }
 
+  type SearchUser {
+    id: Int!
+    username: String!
+  }
+
   type Query {
     user: String
+    users(userName: String!): [SearchUser!]!
   }
 
   type AuthPayload {
@@ -27,14 +33,23 @@ const typeDefs = gql`
   }
 
   input Files {
-    desc: String,
+    desc: String
     base64: String!
+  }
+
+  input TagUsers {
+    id: Int!
+    username: String!
   }
 
   input Travel {
     name: String
     description: String
     private: Boolean!
+    payAtention: String
+    startTime: String
+    endTime: String
+    users: [TagUsers]
   }
 
   type Mutation {
