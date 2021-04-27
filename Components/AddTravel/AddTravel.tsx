@@ -21,6 +21,9 @@ import Image from "./Image/Image";
 import * as SC from "./styledAddTravel";
 import Success from "../Success/Success";
 import { ThemeInterface } from "../../interfaces/themeInterface";
+import TagUsers from "./TagUsers/TagUsers";
+import SearchUsers from "./TagUsers/SearchUsers/SearchUsers";
+import { ImageType } from "../../types/ImageType";
 
 const AddTravel: React.FC<ThemeInterface> = ({ theme }) => {
   const {
@@ -31,7 +34,7 @@ const AddTravel: React.FC<ThemeInterface> = ({ theme }) => {
   const {
     handleOnSubmit,
     handleAddImage,
-    state: { images, error: imagesError },
+    state: { images, users, error: imagesError },
     dispatch,
     addingStatus: { loading, error, called, data },
   } = useAddTravel();
@@ -42,7 +45,7 @@ const AddTravel: React.FC<ThemeInterface> = ({ theme }) => {
         <CredentialsSC.StyledInputsWrapper>
           <TravelName register={register} error={errors.travelName} />
           <TravelDesc register={register} error={errors.travelDesc} />
-          {images!.map((_, index: number) => (
+          {images!.map((_: ImageType, index: number) => (
             <Image
               images={images}
               imageIndex={index}
@@ -62,6 +65,9 @@ const AddTravel: React.FC<ThemeInterface> = ({ theme }) => {
           />
           <TravelStartTime register={register} />
           <TravelEndTime register={register} />
+          <TagUsers>
+            <SearchUsers users={users} dispatchImages={dispatch} />
+          </TagUsers>
           <TravelVisibility register={register} />
         </CredentialsSC.StyledInputsWrapper>
         {loading ? <Loader /> : null}

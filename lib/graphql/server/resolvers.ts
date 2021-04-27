@@ -21,6 +21,22 @@ import crypto from "crypto";
 import nodemailer from "nodemailer";
 
 const resolvers = {
+  Query: {
+    users: async (_: unknown, args: { userName: string }) => {
+      try {
+        if (!/^[A-Za-z0-9ęóąśłżźćńĘÓĄŚŁŻŹĆŃ]{2,30}$/.test(args.userName))
+          throw new UserInputError("Unable to find a user");
+
+        const users = await query(
+          `SELECT id, username FROM users WHERE verified=1 AND username LIKE '${args.userName}%' LIMIT 20`
+        );
+
+        return users;
+      } catch (e) {
+        throw new Error(e.message ? e.message : GlobalErrors.STH_WENT_WRONG);
+      }
+    },
+  },
   Mutation: {
     registerUser: async (
       _: unknown,
@@ -205,17 +221,21 @@ const resolvers = {
       try {
         if (!args.refreshToken)
           throw new ForbiddenError(LoginErrors.WRONG_CREDENTIALS);
+
         const refreshToken = jwt.verify(
           args.refreshToken,
           `${process.env.REFRESH_TOKEN_SECRET}`
         );
+
         const id = (refreshToken as VerifyToken).id;
         const user = await query(
           "SELECT id FROM users WHERE id = ? AND verified = 1",
           [id]
         );
+
         if (user.length === 0)
           throw new AuthenticationError(LoginErrors.WRONG_CREDENTIALS);
+
         const travelPrivate: number = args.travel.private ? 1 : 0;
         const hash = crypto.randomBytes(20).toString("hex");
         const insertTravel = await query(
@@ -232,10 +252,12 @@ const resolvers = {
           ]
         );
         if (insertTravel.affectedRows !== 1) throw new Error();
+
         const travel = await query("SELECT id from travels WHERE hash = ?", [
           hash,
         ]);
         if (travel.length === 0) throw new Error();
+
         for (let file of args.files) {
           const uploadResult = await cloudinary.v2.uploader.upload(
             file.base64,
@@ -247,6 +269,16 @@ const resolvers = {
             file.desc,
           ]);
         }
+
+        if (args.travel.users.length !== 0) {
+          for (let user of args.travel.users) {
+            await query("INSERT INTO travel_tags VALUES (NULL, ?, ?)", [
+              travel[0].id,
+              user.id,
+            ]);
+          }
+        }
+
         return "Podróż została dodana pomyślnie";
       } catch (e) {
         throw new Error(e.message ? e.message : GlobalErrors.STH_WENT_WRONG);

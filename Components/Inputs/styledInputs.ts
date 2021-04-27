@@ -72,3 +72,11 @@ export const StyledCheckbox: StyledComponent<"input", any> = styled.input`
     width: 25px;
   }
 `;
+
+export const StyledSearchUsers: StyledComponent<"input", any> = styled(
+  StyledInput
+)`
+  border: ${({ theme }) => `1px solid ${theme.colors.dark}`};
+  width: 100%;
+  padding: 5px;
+`;

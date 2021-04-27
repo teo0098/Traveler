@@ -1,25 +1,13 @@
-import Head from 'next/head'
-import { useQuery } from '@apollo/client'
+import Head from "next/head";
 
-import { GET_BOOKS } from '../lib/graphql/client/queries';
-
-const Home : React.FC = () => {
-
-  const { loading, error, data } = useQuery(GET_BOOKS);
-
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error :(</p>;
-
+const Home: React.FC = () => {
   return (
     <>
-        <Head>
-          <title>Strona główna</title>
-        </Head>
-        {(data.books as Array<{title : string, author : string}>).map(book => (
-          <p key={book.title}> {book.title} - {book.author} </p>
-        ))}
+      <Head>
+        <title>Strona główna</title>
+      </Head>
     </>
-  )
-}
+  );
+};
 
-export default Home
+export default Home;

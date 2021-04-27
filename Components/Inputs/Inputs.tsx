@@ -218,3 +218,19 @@ export const TravelEndTime: React.FC<InputsProps<AddTravelFormValues>> = ({
     />
   </SC.StyledInputWrapper>
 );
+
+interface SearchUsersInputProps {
+  search: (users: string) => void;
+  handleOnBlur: () => void;
+}
+
+export const SearchUsersInput: React.FC<SearchUsersInputProps> = ({
+  search,
+  handleOnBlur,
+}) => (
+  <SC.StyledSearchUsers
+    onChange={(e) => search(e.target.value)}
+    onBlur={handleOnBlur}
+    placeholder="User123"
+  />
+);

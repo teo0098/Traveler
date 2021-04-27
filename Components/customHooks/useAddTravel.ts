@@ -30,15 +30,23 @@ const useAddTravel = () => {
       },
       0
     );
+
     if (imagesAmount === 0) {
       return dispatch({
         type: ImagesActionsTypes.ERROR,
         error: "Wgraj przynajmniej jedno zdjęcie aby dodać podróż",
       });
     }
+
     const files = state.images
       ?.map((image) => ({ desc: image.desc, base64: image.base64 }))
       .filter((image) => image.base64 !== null);
+
+    const users = state.users?.map((user) => ({
+      id: user.id,
+      username: user.username,
+    }));
+
     addTravel({
       variables: {
         files,
@@ -50,6 +58,7 @@ const useAddTravel = () => {
           payAtention: data.travelPayAttention,
           startTime: data.travelStartTime,
           endTime: data.travelEndTime,
+          users,
         },
       },
     });

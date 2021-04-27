@@ -17,5 +17,6 @@ export type AddTravelArgs = {
     payAtention: string | undefined | null;
     startTime: string | undefined | null;
     endTime: string | undefined | null;
+    users: Array<{ id: number; username: string }>;
   };
 };
