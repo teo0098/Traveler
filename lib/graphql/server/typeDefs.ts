@@ -13,9 +13,33 @@ const typeDefs = gql`
     username: String!
   }
 
+  type Travels {
+    id: Int!
+    name: String
+    created_at: String!
+    image_url: String!
+    username: String!
+  }
+
+  type Images {
+    image_url: String!
+    image_desc: String
+  }
+
+  type TravelType {
+    description: String
+    payAttention: String
+    startTime: String
+    endTime: String
+    images: [Images!]!
+    users: [SearchUser]
+  }
+
   type Query {
     user: String
     users(userName: String!): [SearchUser!]!
+    travels(offset: Int!): [Travels!]!
+    travel(id: Int!): TravelType!
   }
 
   type AuthPayload {

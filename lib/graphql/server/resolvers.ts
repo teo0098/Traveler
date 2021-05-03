@@ -15,7 +15,7 @@ import {
   VerifyErrors,
 } from "./errors";
 import bcrypt from "bcrypt";
-import { query } from "../../db/db";
+import { query, db } from "../../db/db";
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
 import nodemailer from "nodemailer";
@@ -25,13 +25,72 @@ const resolvers = {
     users: async (_: unknown, args: { userName: string }) => {
       try {
         if (!/^[A-Za-z0-9ęóąśłżźćńĘÓĄŚŁŻŹĆŃ]{2,30}$/.test(args.userName))
-          throw new UserInputError("Unable to find a user");
+          throw new UserInputError("Brak wyników");
 
         const users = await query(
           `SELECT id, username FROM users WHERE verified=1 AND username LIKE '${args.userName}%' LIMIT 20`
         );
 
         return users;
+      } catch (e) {
+        throw new Error(e.message ? e.message : GlobalErrors.STH_WENT_WRONG);
+      }
+    },
+    travels: async (_: unknown, args: { offset: number }) => {
+      try {
+        const travels = await query(
+          `
+            SELECT travels.id, travels.name, travels.created_at , travel_images.image_url, users.username
+            FROM travels
+            JOIN users ON travels.user_id=users.id
+            JOIN travel_images ON travels.id=travel_images.travel_id
+            WHERE travels.private=0
+            GROUP BY travels.id
+            ORDER BY travels.created_at DESC
+            LIMIT 10 OFFSET ?`,
+          [args.offset]
+        );
+
+        if (travels.length === 0) throw new Error();
+
+        return travels;
+      } catch (e) {
+        throw new Error(e.message ? e.message : GlobalErrors.STH_WENT_WRONG);
+      }
+    },
+    travel: async (_: unknown, args: { id: number }) => {
+      try {
+        const results = await db
+          .transaction()
+          .query(
+            `
+            SELECT travels.description, travels.payAttention, travels.startTime, travels.endTime
+            FROM travels WHERE travels.id = ?`,
+            [args.id]
+          )
+          .query(
+            `
+            SELECT travel_images.image_url, travel_images.image_desc
+            FROM travel_images WHERE travel_images.travel_id = ?`,
+            [args.id]
+          )
+          .query(
+            `
+            SELECT users.username, users.id
+            FROM users, travel_tags 
+            WHERE travel_tags.user_id = users.id 
+            AND travel_tags.travel_id = ?`,
+            [args.id]
+          )
+          .commit();
+
+        if (!results || results.length < 1) throw new Error();
+
+        return {
+          ...results[0][0],
+          images: results[1],
+          users: results[2],
+        };
       } catch (e) {
         throw new Error(e.message ? e.message : GlobalErrors.STH_WENT_WRONG);
       }
