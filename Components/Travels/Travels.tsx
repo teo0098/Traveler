@@ -1,17 +1,23 @@
 import Skeleton from "react-loading-skeleton";
 
-import { TravelsType } from "../../types/TravelsType";
 import useTravels from "../customHooks/useTravels";
 import Travel from "./Travel/Travel";
 import * as SC from "./styledTravels";
+import TravelInfoContext from "../../context/TravelInfoContext";
 
 const Travels: React.FC = () => {
   const {
-    travels: { loading, error, data },
+    travels: { loading },
+    adventures,
   } = useTravels();
 
   return (
     <SC.StyledTravels>
+      {adventures.map((travel) => (
+        <TravelInfoContext.Provider key={travel.id} value={travel}>
+          <Travel />
+        </TravelInfoContext.Provider>
+      ))}
       {loading
         ? [...Array(3)].map((_, index: number) => (
             <div key={index}>
@@ -19,11 +25,6 @@ const Travels: React.FC = () => {
               <Skeleton height={300} />
               <Skeleton count={2} />
             </div>
-          ))
-        : null}
-      {!loading && !error
-        ? (data.travels as TravelsType[]).map((travel) => (
-            <Travel key={travel.id} travel={travel} />
           ))
         : null}
     </SC.StyledTravels>

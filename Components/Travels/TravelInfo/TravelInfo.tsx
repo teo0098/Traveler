@@ -1,118 +1,78 @@
 import { AnimatePresence } from "framer-motion";
-import Image from "next/image";
 import { XCircle } from "react-feather";
 import Skeleton from "react-loading-skeleton";
-import { Swiper, SwiperSlide } from "swiper/react";
-import SwiperCore, { Pagination, Navigation } from "swiper/core";
-import "swiper/swiper.min.css";
-import "swiper/components/pagination/pagination.min.css";
-import "swiper/components/navigation/navigation.min.css";
+import moment from "moment";
 
-import { variants } from "./animationVariants";
+import { parentVariants, childVariants } from "./animationVariants";
 import * as SC from "./styledTravelInfo";
+import * as TravelSC from "../Travel/styledTravel";
 import useTravelInfo from "../../customHooks/useTravelInfo";
 import { TravelInfoProps } from "./travelInfoProps";
+import SwiperComponent from "./Swiper/Swiper";
+import Information from "./Information/Information";
+import { useContext } from "react";
+import TravelInfoContext from "../../../context/TravelInfoContext";
 import { TravelType } from "../../../types/TravelType";
+import Reaction from "../Reaction/Reaction";
 
-SwiperCore.use([Pagination, Navigation]);
+moment.locale("pl");
 
-const TravelInfo: React.FC<TravelInfoProps> = ({
-  visible,
-  travel,
-  setVisible,
-}) => {
-  const { travel: travelInfo } = useTravelInfo(visible, travel.id);
+const TravelInfo: React.FC<TravelInfoProps> = ({ visible, setVisible }) => {
+  const { id, created_at, username } = useContext(TravelInfoContext);
+  const { travel: travelInfo } = useTravelInfo(visible, id);
 
   return (
     <AnimatePresence>
       {visible && (
-        <SC.StyledTravelInfo
-          variants={variants}
+        <SC.StyledShadow
+          variants={parentVariants}
           initial="hidden"
           animate="visible"
           exit="hidden"
         >
-          <SC.StyledClose>
-            <XCircle onClick={() => setVisible(false)} />
-          </SC.StyledClose>
-          {travelInfo.loading ? (
-            <div>
-              <Skeleton height={300} />
-              <Skeleton />
-              <Skeleton />
-            </div>
-          ) : null}
-          {!travelInfo.loading && !travelInfo.error && travelInfo.called ? (
-            <div>
-              <Swiper
-                pagination={{
-                  type: "progressbar",
-                }}
-                navigation={true}
-                className="mySwiper"
-              >
-                {(travelInfo.data.travel as TravelType).images.map((img) => (
-                  <SwiperSlide key={img.image_url}>
-                    <section>
-                      <Image
-                        layout="intrinsic"
-                        src={img.image_url}
-                        alt="travel"
-                        width={500}
-                        height={300}
-                      />
-                      <SC.StyledDesc>
-                        <pre>{img.image_desc}</pre>
-                      </SC.StyledDesc>
-                    </section>
-                  </SwiperSlide>
-                ))}
-              </Swiper>
-              {(travelInfo.data.travel as TravelType).users.length > 0 ? (
-                <>
-                  <SC.StyledText>Użytkownicy oznaczeni</SC.StyledText>
-                  {(travelInfo.data.travel as TravelType).users?.map((user) => (
-                    <p> {user.username} </p>
-                  ))}
-                </>
-              ) : null}
-              {travelInfo.data.travel.description ? (
-                <>
-                  <SC.StyledText>Opis wyprawy</SC.StyledText>
-                  <SC.StyledDesc>
-                    <pre>{travelInfo.data.travel.description}</pre>
-                  </SC.StyledDesc>
-                </>
-              ) : null}
-              {travelInfo.data.travel.payAttention ? (
-                <>
-                  <SC.StyledText>Zwróć uwagę...</SC.StyledText>
-                  <SC.StyledDesc>
-                    <pre>{travelInfo.data.travel.payAttention}</pre>
-                  </SC.StyledDesc>
-                </>
-              ) : null}
-              {travelInfo.data.travel.startTime !== "0000-00-00" ? (
-                <>
-                  <SC.StyledText>Data rozpoczęcia podróży</SC.StyledText>
-                  <SC.StyledDesc>
-                    {" "}
-                    {travelInfo.data.travel.startTime}{" "}
-                  </SC.StyledDesc>
-                </>
-              ) : null}
-              {travelInfo.data.travel.endTime !== "0000-00-00" ? (
-                <>
-                  <SC.StyledText>Data zakończenia podróży</SC.StyledText>
-                  <SC.StyledDesc>
-                    {" "}
-                    {travelInfo.data.travel.endTime}{" "}
-                  </SC.StyledDesc>
-                </>
-              ) : null}
-            </div>
-          ) : null}
-        </SC.StyledTravelInfo>
+          <SC.StyledTravelInfo
+            variants={childVariants}
+            initial="hidden"
+            animate="visible"
+            exit="hidden"
+          >
+            <SC.StyledClose>
+              <XCircle onClick={() => setVisible(false)} />
+            </SC.StyledClose>
+            {travelInfo.loading ? (
+              <div>
+                <Skeleton height={300} />
+                <Skeleton />
+                <Skeleton />
+              </div>
+            ) : null}
+            {!travelInfo.loading && !travelInfo.error && travelInfo.called ? (
+              <div>
+                <SC.StyledPost>
+                  <TravelSC.StyledUserName>{username}</TravelSC.StyledUserName>
+                  <SC.StyledDate>{moment(+created_at).fromNow()}</SC.StyledDate>
+                </SC.StyledPost>
+                <SwiperComponent
+                  images={(travelInfo.data.travel as TravelType).images}
+                />
+                <SC.StyledReaction>
+                  <Reaction />
+                </SC.StyledReaction>
+                <Information
+                  users={(travelInfo.data.travel as TravelType).users}
+                  payAttention={
+                    (travelInfo.data.travel as TravelType).payAttention
+                  }
+                  description={
+                    (travelInfo.data.travel as TravelType).description
+                  }
+                  startTime={(travelInfo.data.travel as TravelType).startTime}
+                  endTime={(travelInfo.data.travel as TravelType).endTime}
+                />
+              </div>
+            ) : null}
+          </SC.StyledTravelInfo>
+        </SC.StyledShadow>
       )}
     </AnimatePresence>
   );

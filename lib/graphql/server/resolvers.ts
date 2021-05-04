@@ -47,7 +47,7 @@ const resolvers = {
             WHERE travels.private=0
             GROUP BY travels.id
             ORDER BY travels.created_at DESC
-            LIMIT 10 OFFSET ?`,
+            LIMIT 1 OFFSET ?`,
           [args.offset]
         );
 

@@ -7,10 +7,6 @@ const useTravelInfo = (visible: boolean, travelID: number) => {
   const [getTravel, travel] = useLazyQuery(GET_TRAVEL);
 
   useEffect(() => {
-    console.log(travel.data);
-  }, [travel]);
-
-  useEffect(() => {
     if (visible)
       getTravel({
         variables: {

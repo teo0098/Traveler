@@ -11,15 +11,20 @@ export const StyledUserName: StyledComponent<"span", any> = styled.span`
   font-size: 18px;
 `;
 
-export const StyledHeart: StyledComponent<"div", any> = styled.div`
-  & > * {
-    width: 30px;
-    height: 30px;
-    cursor: pointer;
-    color: ${({ theme }) => theme.colors.error};
-  }
-`;
-
 export const StyledButton: StyledComponent<"div", any> = styled.div`
   margin-top: 10px;
+`;
+
+export const StyledDate: StyledComponent<"span", any> = styled.span`
+  font-size: 16px;
+`;
+
+export const StyledImage: StyledComponent<"div", any> = styled.div`
+  position: relative;
+  width: 100%;
+  height: 300px;
+
+  ${({ theme }) => theme.media.desktop} {
+    height: 400px;
+  }
 `;

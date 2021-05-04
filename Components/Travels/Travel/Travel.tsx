@@ -1,34 +1,34 @@
 import Image from "next/image";
 import moment from "moment";
 import { withTheme } from "styled-components";
-import { Heart } from "react-feather";
+import { useContext, useState } from "react";
 
-import { TravelProps } from "./travelProps";
 import * as SC from "./styledTravel";
 import Button from "../../Button/Button";
-import { useState } from "react";
 import TravelInfo from "../TravelInfo/TravelInfo";
+import { ThemeInterface } from "../../../interfaces/themeInterface";
+import TravelInfoContext from "../../../context/TravelInfoContext";
+import Reaction from "../Reaction/Reaction";
 
 moment.locale("pl");
 
-const Travel: React.FC<TravelProps> = ({ travel, theme }) => {
+const Travel: React.FC<ThemeInterface> = ({ theme }) => {
   const [visible, setVisible] = useState<boolean>(false);
+  const { username, name, image_url, created_at } = useContext(
+    TravelInfoContext
+  );
 
   return (
     <SC.StyledTravel>
-      <SC.StyledUserName> {travel.username} </SC.StyledUserName>
-      <Image
-        layout="intrinsic"
-        src={travel.image_url}
-        alt="travel"
-        width={500}
-        height={300}
-      />
-      <SC.StyledHeart>
-        <Heart />
-      </SC.StyledHeart>
-      {travel.name ? <h2> {travel.name} </h2> : null}
-      <span> {moment(+travel.created_at).fromNow()} </span>
+      <SC.StyledUserName> {username} </SC.StyledUserName>
+      <SC.StyledImage>
+        <Image layout="fill" src={image_url} alt="travel" objectFit="cover" />
+      </SC.StyledImage>
+      <Reaction />
+      <div>
+        {name ? <h2> {name} </h2> : null}
+        <SC.StyledDate> {moment(+created_at).fromNow()} </SC.StyledDate>
+      </div>
       <SC.StyledButton>
         <Button
           handleOnClick={() => setVisible(true)}
@@ -37,7 +37,7 @@ const Travel: React.FC<TravelProps> = ({ travel, theme }) => {
           Szczegóły
         </Button>
       </SC.StyledButton>
-      <TravelInfo setVisible={setVisible} travel={travel} visible={visible} />
+      <TravelInfo setVisible={setVisible} visible={visible} />
     </SC.StyledTravel>
   );
 };
