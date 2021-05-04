@@ -1,21 +1,37 @@
 import { gql } from "apollo-server-micro";
 
 const typeDefs = gql`
-  type User {
-    id: ID!
-    username: String!
-    email: String!
-    password: String!
-  }
-
   type SearchUser {
     id: Int!
     username: String!
   }
 
+  type Travels {
+    id: Int!
+    name: String
+    created_at: String!
+    image_url: String!
+    username: String!
+  }
+
+  type Images {
+    image_url: String!
+    image_desc: String
+  }
+
+  type TravelType {
+    description: String
+    payAttention: String
+    startTime: String
+    endTime: String
+    images: [Images!]!
+    users: [SearchUser]
+  }
+
   type Query {
-    user: String
     users(userName: String!): [SearchUser!]!
+    travels(offset: Int!): [Travels!]
+    travel(id: Int!): TravelType!
   }
 
   type AuthPayload {

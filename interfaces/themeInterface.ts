@@ -1,3 +1,3 @@
 export interface ThemeInterface {
-    theme : {[key : string] : any}
+  theme: { [key: string]: any };
 }
