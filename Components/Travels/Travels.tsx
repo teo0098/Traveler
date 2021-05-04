@@ -4,10 +4,11 @@ import useTravels from "../customHooks/useTravels";
 import Travel from "./Travel/Travel";
 import * as SC from "./styledTravels";
 import TravelInfoContext from "../../context/TravelInfoContext";
+import Error from "../Error/Error";
 
 const Travels: React.FC = () => {
   const {
-    travels: { loading },
+    travels: { loading, error },
     adventures,
   } = useTravels();
 
@@ -18,8 +19,9 @@ const Travels: React.FC = () => {
           <Travel />
         </TravelInfoContext.Provider>
       ))}
+      {!loading && error ? <Error> {error.message} </Error> : null}
       {loading
-        ? [...Array(3)].map((_, index: number) => (
+        ? [...Array(1)].map((_, index: number) => (
             <div key={index}>
               <Skeleton />
               <Skeleton height={300} />

@@ -1,13 +1,6 @@
 import { gql } from "apollo-server-micro";
 
 const typeDefs = gql`
-  type User {
-    id: ID!
-    username: String!
-    email: String!
-    password: String!
-  }
-
   type SearchUser {
     id: Int!
     username: String!
@@ -36,9 +29,8 @@ const typeDefs = gql`
   }
 
   type Query {
-    user: String
     users(userName: String!): [SearchUser!]!
-    travels(offset: Int!): [Travels!]!
+    travels(offset: Int!): [Travels!]
     travel(id: Int!): TravelType!
   }
 

@@ -51,8 +51,7 @@ const resolvers = {
           [args.offset]
         );
 
-        if (travels.length === 0) throw new Error();
-
+        if (travels.length === 0) return null;
         return travels;
       } catch (e) {
         throw new Error(e.message ? e.message : GlobalErrors.STH_WENT_WRONG);

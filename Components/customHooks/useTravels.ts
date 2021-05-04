@@ -18,7 +18,7 @@ const useTravels = () => {
   }, [offset]);
 
   useEffect(() => {
-    if (travels.data) {
+    if (travels.data && travels.data.travels !== null) {
       setAdventures((prevState) => [...prevState, ...travels.data.travels]);
       const io = new IntersectionObserver(
         (

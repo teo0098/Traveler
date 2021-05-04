@@ -14,6 +14,7 @@ import { useContext } from "react";
 import TravelInfoContext from "../../../context/TravelInfoContext";
 import { TravelType } from "../../../types/TravelType";
 import Reaction from "../Reaction/Reaction";
+import Error from "../../Error/Error";
 
 moment.locale("pl");
 
@@ -45,6 +46,11 @@ const TravelInfo: React.FC<TravelInfoProps> = ({ visible, setVisible }) => {
                 <Skeleton />
                 <Skeleton />
               </div>
+            ) : null}
+            {!travelInfo.loading && travelInfo.error ? (
+              <SC.StyledError>
+                <Error> {travelInfo.error.message} </Error>
+              </SC.StyledError>
             ) : null}
             {!travelInfo.loading && !travelInfo.error && travelInfo.called ? (
               <div>

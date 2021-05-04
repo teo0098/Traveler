@@ -74,3 +74,9 @@ export const StyledReaction: StyledComponent<"div", any> = styled.div`
     padding: 0 30px;
   }
 `;
+
+export const StyledError: StyledComponent<"div", any> = styled.div`
+  display: flex;
+  padding: 10px;
+  justify-content: center;
+`;
