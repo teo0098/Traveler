@@ -100,7 +100,6 @@ const typeDefs = gql`
     editUsername(email: String!, newUsername: String!): LoginAuth
     changeUserPhoto(refreshToken: String!, file: String!): Photo
     getUserData(refreshToken: String!): User
-    editUsername(email: String!, username: String!): Boolean
     likeTravel(travelID: Int!, refreshToken: String!): Boolean!
   }
 
