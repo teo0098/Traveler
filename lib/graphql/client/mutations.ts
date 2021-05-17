@@ -37,3 +37,35 @@ export const VERIFY_USER = gql`
     }
   }
 `;
+
+
+export const GET_DATA_USER = gql`
+  mutation GetUserData($refreshToken: String!) {
+    getUserData(refreshToken: $refreshToken) {
+      username
+      email
+      avatar
+      travels
+    }
+  }
+`;
+
+export const CHANGE_USER_PHOTO = gql`
+  mutation ChangeUserPhoto($refreshToken: String!, $file: String!) {
+    changeUserPhoto(refreshToken: $refreshToken, file: $file) {
+        photo
+    }
+  }
+`;
+
+export const CHANGE_PASSWORD = gql`
+  mutation ChangePassword($email: String!, $currentPassword: String!, $newPassword: String!) {
+    editPassword(email: $email, currentPassword: $currentPassword, newPassword: $newPassword) 
+  }
+`;
+
+export const CHANGE_USERNAME = gql`
+  mutation editUsername($email: String!, $username: String!) {
+    editUsername(email: $email, username: $username) 
+  }
+`;

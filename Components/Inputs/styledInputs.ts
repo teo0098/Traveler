@@ -15,6 +15,24 @@ export const StyledInputWrapper: StyledComponent<"div", any> = styled.div`
   width: 100%;
 `;
 
+export const StyledInputWrapperPhoto : StyledComponent<div, any> = styled.div`
+  display: inline-block;
+  position: relative;  
+  cursor:pointer;
+  color: ${theme.colors.primary};
+  font-weight: 600;
+  input[type="file"] {
+    position: absolute;
+    left: 0;
+    opacity: 0;
+    top: 0;
+    bottom: 0;
+    width: 100%;
+    cursor:pointer;
+  }
+`
+
+
 interface StyledLabelProps {
   error?: {} | undefined;
 }

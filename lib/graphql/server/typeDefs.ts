@@ -1,9 +1,18 @@
 import { gql } from "apollo-server-micro";
 
+
 const typeDefs = gql`
   type SearchUser {
     id: Int!
+    }
+
+  type User {
+    id: ID!
     username: String!
+    email: String!
+    password: String!
+    avatar: String!
+    travels: [String]!
   }
 
   type Travels {
@@ -26,9 +35,9 @@ const typeDefs = gql`
     endTime: String
     images: [Images!]!
     users: [SearchUser]
-  }
-
+}
   type Query {
+    user: String
     users(userName: String!): [SearchUser!]!
     travels(offset: Int!): [Travels!]
     travel(id: Int!): TravelType!
@@ -47,6 +56,11 @@ const typeDefs = gql`
     refreshToken: String!
     accessToken: String!
   }
+  
+  type Photo{
+       photo: String!
+  }
+  
 
   input Files {
     desc: String
@@ -78,13 +92,16 @@ const typeDefs = gql`
     ): AuthPayload
     verifyUser(verifyHash: String!): VerifyPayload
 
+
     editPassword(
       email: String!
       currentPassword: String!
       newPassword: String!
-    ): LoginAuth
+    ): Boolean
 
-    editUsername(email: String!, newUsername: String!): LoginAuth
+    changeUserPhoto(refreshToken: String!, file: String!): Photo
+    getUserData(refreshToken: String!): User
+    editUsername(email: String!, username: String!): Boolean
   }
 `;
 
