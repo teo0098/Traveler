@@ -37,3 +37,9 @@ export const VERIFY_USER = gql`
     }
   }
 `;
+
+export const LIKE_TRAVEL = gql`
+  mutation {
+    likeTravel
+  }
+`;

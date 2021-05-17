@@ -19,6 +19,8 @@ import { query, db } from "../../db/db";
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
 import nodemailer from "nodemailer";
+import { SubscriptionsTypes } from "./subscriptionsTypes";
+import { Context } from "../../interfaces/Context";
 
 const resolvers = {
   Query: {
@@ -341,6 +343,22 @@ const resolvers = {
       } catch (e) {
         throw new Error(e.message ? e.message : GlobalErrors.STH_WENT_WRONG);
       }
+    },
+    likeTravel: async (
+      _: unknown,
+      args: { travelID: number },
+      { pubsub }: Context
+    ) => {
+      await pubsub.publish(SubscriptionsTypes.TRAVEL_LIKED, {
+        travelLiked: `Podroz o id zostala polubiona`,
+      });
+      return "Podroz o id zostala polubiona";
+    },
+  },
+  Subscription: {
+    travelLiked: {
+      subscribe: (_: unknown, __: unknown, { pubsub }: Context) =>
+        pubsub.asyncIterator([SubscriptionsTypes.TRAVEL_LIKED]),
     },
   },
 };
