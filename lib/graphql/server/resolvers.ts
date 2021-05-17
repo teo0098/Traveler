@@ -39,11 +39,25 @@ const resolvers = {
         throw new Error(e.message ? e.message : GlobalErrors.STH_WENT_WRONG);
       }
     },
-    travels: async (_: unknown, args: { offset: number }) => {
+    travels: async (
+      _: unknown,
+      args: { offset: number; refreshToken: string | null | undefined }
+    ) => {
       try {
+        let id: number = 0;
+        if (args.refreshToken) {
+          const refreshToken = jwt.verify(
+            args.refreshToken,
+            `${process.env.REFRESH_TOKEN_SECRET}`
+          );
+          id = (refreshToken as VerifyToken).id;
+        }
+
         const travels = await query(
           `
-            SELECT travels.id, travels.name, travels.created_at , travel_images.image_url, users.username
+            SELECT travels.id, travels.name, travels.created_at , travel_images.image_url, users.username,
+            (SELECT COUNT(*) AS travelLikes FROM travel_likes WHERE travel_id = travels.id) as travelLikes,
+            (SELECT COUNT(*) AS travelLikes FROM travel_likes WHERE travel_id = travels.id AND user_id = ?) as userLikes
             FROM travels
             JOIN users ON travels.user_id=users.id
             JOIN travel_images ON travels.id=travel_images.travel_id
@@ -51,7 +65,7 @@ const resolvers = {
             GROUP BY travels.id
             ORDER BY travels.created_at DESC
             LIMIT 1 OFFSET ?`,
-          [args.offset]
+          [id, args.offset]
         );
 
         if (travels.length === 0) return null;
@@ -275,12 +289,14 @@ const resolvers = {
           `${process.env.ACCESS_TOKEN_SECRET}`,
           { expiresIn: "5m" }
         );
-        await query("INSERT INTO refresh_tokens VALUES (?, ?)", [
-          refreshToken,
-          (user[0] as UserType).id,
-        ]).then((res) => {
-          console.log(res);
-        });
+
+        const insertedRefreshToken = await query(
+          "INSERT INTO refresh_tokens VALUES (NULL, ?, ?)",
+          [refreshToken, (user[0] as UserType).id]
+        );
+
+        if (insertedRefreshToken.affectedRows === 0) throw new Error();
+
         return {
           refreshToken,
           accessToken,
@@ -470,20 +486,30 @@ const resolvers = {
           [args.travelID, id]
         );
 
-        if (travelLiked.length !== 0) return false;
-
-        await query("INSERT INTO travel_likes VALUES(NULL, ?, ?)", [
-          args.travelID,
-          id,
-        ]);
+        let direction: number = 1;
+        if (travelLiked.length !== 0) {
+          await query(
+            "DELETE FROM travel_likes WHERE travel_id = ? AND user_id = ?",
+            [args.travelID, id]
+          );
+          direction = -1;
+        } else {
+          await query("INSERT INTO travel_likes VALUES(NULL, ?, ?)", [
+            args.travelID,
+            id,
+          ]);
+        }
 
         const travelLikes = await query(
-          "SELECT COUNT(*) AS travelLikes FROM travel_likes WHERE travel_id = ? AND user_id = ?",
-          [args.travelID, id]
+          "SELECT COUNT(*) AS travelLikes FROM travel_likes WHERE travel_id = ?",
+          [args.travelID]
         );
 
         pubsub.publish(SubscriptionsTypes.TRAVEL_LIKED, {
-          travelLiked: travelLikes[0].travelLikes,
+          travelLiked: {
+            likes: travelLikes[0].travelLikes,
+            direction,
+          },
           travelID: args.travelID,
         });
 

@@ -13,6 +13,7 @@ const useTravels = () => {
     getTravels({
       variables: {
         offset,
+        refreshToken: localStorage.getItem("refreshToken"),
       },
     });
   }, [offset]);

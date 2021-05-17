@@ -21,6 +21,8 @@ const typeDefs = gql`
     created_at: String!
     image_url: String!
     username: String!
+    travelLikes: Int!
+    userLikes: Int!
   }
 
   type Images {
@@ -39,7 +41,7 @@ const typeDefs = gql`
   type Query {
     user: String
     users(userName: String!): [SearchUser!]!
-    travels(offset: Int!): [Travels!]
+    travels(offset: Int!, refreshToken: String): [Travels!]
     travel(id: Int!): TravelType!
   }
 
@@ -103,8 +105,13 @@ const typeDefs = gql`
     likeTravel(travelID: Int!, refreshToken: String!): Boolean!
   }
 
+  type Likes {
+    likes: Int!
+    direction: Int!
+  }
+
   type Subscription {
-    travelLiked(travelID: Int!): Int!
+    travelLiked(travelID: Int!): Likes!
   }
 `;
 

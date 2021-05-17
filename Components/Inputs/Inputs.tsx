@@ -1,30 +1,11 @@
 import validator from "validator";
 import React, { memo } from "react";
-import * as SC from './styledInputs'
-import { InputsProps } from './inputsProps'
-import { FormValues as SigninFormValues } from "../Signin/formValues"
-import { FormValues as AddTravelFormValues } from '../AddTravel/formValues'
-import {FormValues as SignupFormValues} from "../Signup/formValues"
-import {FormValues as ChangePhotoValues} from "../ChangePhoto/formValues"
-
-export const LoginEmail : React.FC<InputsProps<SigninFormValues>> = ({ register, error }) => (
-    <SC.StyledInputWrapper>
-      <SC.StyledLabel error={error} htmlFor="email">
-        {error ? error.message : "Adres e-mail"}
-      </SC.StyledLabel>
-      <SC.StyledInput
-        {...register("email", {
-          required: "Pole jest wymagane",
-          validate: (value: string) => {
-            if (!validator.isEmail(value)) return "Niepoprawny adres e-mail";
-            return undefined;
-          },
-        })}
-        id="email"
-        type="text"
-      />
-    </SC.StyledInputWrapper>
-)
+import * as SC from "./styledInputs";
+import { InputsProps } from "./inputsProps";
+import { FormValues as SigninFormValues } from "../Signin/formValues";
+import { FormValues as AddTravelFormValues } from "../AddTravel/formValues";
+import { FormValues as SignupFormValues } from "../Signup/formValues";
+import { FormValues as ChangePhotoValues } from "../ChangePhoto/formValues";
 
 export const LoginEmail: React.FC<InputsProps<SigninFormValues>> = ({
   register,
@@ -182,118 +163,121 @@ export const RegisterUsername: React.FC<InputsProps<SignupFormValues>> = memo(
   )
 );
 
-export const UploadAvatar : React.FC<InputsProps<ChangePhotoValues>> = ({ register, ref }) => (
-    <SC.StyledInputWrapperPhoto>
-        <SC.StyledInput
-            {...register("file", { required: "Pole jest wymagane" })}
-            id="file"
-            type="file"
-            ref={ref}
-        />
-        Dodaj zdjęcie profilowe
-    </SC.StyledInputWrapperPhoto>
-)
-
-export const ChangePasswordEmail: React.FC<InputsProps<SignupFormValues>> = memo(
-    ({ register, error }) => (
-        <SC.StyledInputWrapper>
-            <SC.StyledLabel error={error} htmlFor="email">
-                {error ? error.message : "Adres e-mail"}
-            </SC.StyledLabel>
-            <SC.StyledInput
-                {...register("email", {
-                    required: "Pole jest wymagane",
-                    validate: (value: string) => {
-                        if (!validator.isEmail(value)) return "Niepoprawny adres e-mail";
-                        return undefined;
-                    },
-                })}
-                id="email"
-                type="text"
-            />
-        </SC.StyledInputWrapper>
-    )
+export const UploadAvatar: React.FC<InputsProps<ChangePhotoValues>> = ({
+  register,
+  ref,
+}) => (
+  <SC.StyledInputWrapperPhoto>
+    <SC.StyledInput
+      {...register("file", { required: "Pole jest wymagane" })}
+      id="file"
+      type="file"
+      ref={ref}
+    />
+    Dodaj zdjęcie profilowe
+  </SC.StyledInputWrapperPhoto>
 );
 
-export const ChangePasswordCurrent: React.FC<InputsProps<SignupFormValues>> = memo(
-    ({ register, error }) => (
-        <SC.StyledInputWrapper>
-            <SC.StyledLabel error={error} htmlFor="currentPassword">
-                {error ? error.message : "Aktualne hasło"}
-            </SC.StyledLabel>
-            <SC.StyledInput
-                {...register("currentPassword", {
-                    required: "Pole jest wymagane",
-                    validate: (value: string) => {
-                        if (!validator.isStrongPassword(value))
-                            return "Hasło nie jest bezpieczne";
-                        return undefined;
-                    },
-                })}
-                id="currentPassword"
-                type="password"
-            />
-        </SC.StyledInputWrapper>
-    )
-);
+export const ChangePasswordEmail: React.FC<
+  InputsProps<SignupFormValues>
+> = memo(({ register, error }) => (
+  <SC.StyledInputWrapper>
+    <SC.StyledLabel error={error} htmlFor="email">
+      {error ? error.message : "Adres e-mail"}
+    </SC.StyledLabel>
+    <SC.StyledInput
+      {...register("email", {
+        required: "Pole jest wymagane",
+        validate: (value: string) => {
+          if (!validator.isEmail(value)) return "Niepoprawny adres e-mail";
+          return undefined;
+        },
+      })}
+      id="email"
+      type="text"
+    />
+  </SC.StyledInputWrapper>
+));
+
+export const ChangePasswordCurrent: React.FC<
+  InputsProps<SignupFormValues>
+> = memo(({ register, error }) => (
+  <SC.StyledInputWrapper>
+    <SC.StyledLabel error={error} htmlFor="currentPassword">
+      {error ? error.message : "Aktualne hasło"}
+    </SC.StyledLabel>
+    <SC.StyledInput
+      {...register("currentPassword", {
+        required: "Pole jest wymagane",
+        validate: (value: string) => {
+          if (!validator.isStrongPassword(value))
+            return "Hasło nie jest bezpieczne";
+          return undefined;
+        },
+      })}
+      id="currentPassword"
+      type="password"
+    />
+  </SC.StyledInputWrapper>
+));
 
 export const ChangePasswordNew: React.FC<InputsProps<SignupFormValues>> = memo(
-    ({ register, error }) => (
-        <SC.StyledInputWrapper>
-            <SC.StyledLabel error={error} htmlFor="newPassword">
-                {error ? error.message : "Nowe hasło"}
-            </SC.StyledLabel>
-            <SC.StyledInput
-                {...register("newPassword", {
-                    required: "Pole jest wymagane",
-                    validate: (value: string) => {
-                        if (!validator.isStrongPassword(value))
-                            return "Hasło nie jest bezpieczne";
-                        return undefined;
-                    },
-                })}
-                id="newPassword"
-                type="password"
-            />
-        </SC.StyledInputWrapper>
-    )
+  ({ register, error }) => (
+    <SC.StyledInputWrapper>
+      <SC.StyledLabel error={error} htmlFor="newPassword">
+        {error ? error.message : "Nowe hasło"}
+      </SC.StyledLabel>
+      <SC.StyledInput
+        {...register("newPassword", {
+          required: "Pole jest wymagane",
+          validate: (value: string) => {
+            if (!validator.isStrongPassword(value))
+              return "Hasło nie jest bezpieczne";
+            return undefined;
+          },
+        })}
+        id="newPassword"
+        type="password"
+      />
+    </SC.StyledInputWrapper>
+  )
 );
 
-export const ChangeUsernameInput: React.FC<InputsProps<SignupFormValues>> = memo(
-    ({ register, error }) => (
-        <SC.StyledInputWrapper>
-            <SC.StyledLabel error={error} htmlFor="username">
-                {error ? error.message : "Nazwa użytkownika"}
-            </SC.StyledLabel>
-            <SC.StyledInput
-                {...register("username", { required: "Pole jest wymagane" })}
-                id="changeUsername"
-                type="username"
-            />
-        </SC.StyledInputWrapper>
-    )
-);
+export const ChangeUsernameInput: React.FC<
+  InputsProps<SignupFormValues>
+> = memo(({ register, error }) => (
+  <SC.StyledInputWrapper>
+    <SC.StyledLabel error={error} htmlFor="username">
+      {error ? error.message : "Nazwa użytkownika"}
+    </SC.StyledLabel>
+    <SC.StyledInput
+      {...register("username", { required: "Pole jest wymagane" })}
+      id="changeUsername"
+      type="username"
+    />
+  </SC.StyledInputWrapper>
+));
 
-export const ChangeUsernameEmail: React.FC<InputsProps<SignupFormValues>> = memo(
-    ({ register, error }) => (
-        <SC.StyledInputWrapper>
-            <SC.StyledLabel error={error} htmlFor="email">
-                {error ? error.message : "Adres e-mail"}
-            </SC.StyledLabel>
-            <SC.StyledInput
-                {...register("email", {
-                    required: "Pole jest wymagane",
-                    validate: (value: string) => {
-                        if (!validator.isEmail(value)) return "Niepoprawny adres e-mail";
-                        return undefined;
-                    },
-                })}
-                id="email"
-                type="text"
-            />
-        </SC.StyledInputWrapper>
-    )
-);
+export const ChangeUsernameEmail: React.FC<
+  InputsProps<SignupFormValues>
+> = memo(({ register, error }) => (
+  <SC.StyledInputWrapper>
+    <SC.StyledLabel error={error} htmlFor="email">
+      {error ? error.message : "Adres e-mail"}
+    </SC.StyledLabel>
+    <SC.StyledInput
+      {...register("email", {
+        required: "Pole jest wymagane",
+        validate: (value: string) => {
+          if (!validator.isEmail(value)) return "Niepoprawny adres e-mail";
+          return undefined;
+        },
+      })}
+      id="email"
+      type="text"
+    />
+  </SC.StyledInputWrapper>
+));
 
 export const TravelVisibility: React.FC<InputsProps<AddTravelFormValues>> = ({
   register,

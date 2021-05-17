@@ -1,29 +1,20 @@
 import { Heart } from "react-feather";
-import { useSubscription, useMutation } from "@apollo/client";
 
 import * as SC from "./styledReaction";
-import { TRAVEL_LIKED } from "../../../lib/graphql/client/subscriptions";
-import { LIKE_TRAVEL } from "../../../lib/graphql/client/mutations";
 import ReactionProps from "./reactionProps";
+import useReaction from "../../customHooks/useReaction";
 
 const Reaction: React.FC<ReactionProps> = ({ travelID }) => {
-  const data = useSubscription(TRAVEL_LIKED, {
-    variables: {
-      travelID,
-    },
-  });
-  const [likeTravel] = useMutation(LIKE_TRAVEL, {
-    variables: {
-      travelID,
-      refreshToken: localStorage.getItem("refreshToken"),
-    },
-  });
+  const { data, travelLiked, handleLikeTravel, travelLikes } = useReaction(
+    travelID
+  );
 
   return (
-    <SC.StyledReaction>
-      <Heart onClick={() => likeTravel()} />
-      {console.log(data)}
-      {data.data ? data.data.travelLiked : null}
+    <SC.StyledReaction travelLiked={travelLiked}>
+      <Heart onClick={handleLikeTravel} />
+      <SC.StyledLikes>
+        {data ? data.travelLiked.likes : travelLikes}
+      </SC.StyledLikes>
     </SC.StyledReaction>
   );
 };

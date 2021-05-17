@@ -8,6 +8,8 @@ const TravelInfoContext = React.createContext<TravelsType>({
   image_url: "",
   name: null,
   username: "",
+  travelLikes: 0,
+  userLikes: 0,
 });
 
 export default TravelInfoContext;

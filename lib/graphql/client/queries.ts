@@ -10,13 +10,15 @@ export const GET_USERS = gql`
 `;
 
 export const GET_TRAVELS = gql`
-  query GetTravels($offset: Int!) {
-    travels(offset: $offset) {
+  query GetTravels($offset: Int!, $refreshToken: String) {
+    travels(offset: $offset, refreshToken: $refreshToken) {
       id
       name
       created_at
       image_url
       username
+      travelLikes
+      userLikes
     }
   }
 `;

@@ -4,4 +4,6 @@ export type TravelsType = {
   created_at: string;
   image_url: string;
   username: string;
+  travelLikes: number;
+  userLikes: number;
 };
