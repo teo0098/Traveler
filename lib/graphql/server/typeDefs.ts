@@ -85,11 +85,11 @@ const typeDefs = gql`
     ): LoginAuth
 
     editUsername(email: String!, newUsername: String!): LoginAuth
-    likeTravel(travelID: Int!): String!
+    likeTravel(travelID: Int!, refreshToken: String!): Boolean!
   }
 
   type Subscription {
-    travelLiked(travelID: Int!): String!
+    travelLiked(travelID: Int!): Int!
   }
 `;
 

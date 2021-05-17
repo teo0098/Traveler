@@ -347,14 +347,53 @@ const resolvers = {
     },
     likeTravel: async (
       _: unknown,
-      args: { travelID: number },
+      args: { travelID: number; refreshToken: string },
       { pubsub }: Context
     ) => {
-      pubsub.publish(SubscriptionsTypes.TRAVEL_LIKED, {
-        travelLiked: `Podroz o id ${args.travelID} zostala polubionaaaaa`,
-        travelID: args.travelID,
-      });
-      return "SUCCESS";
+      try {
+        if (!args.refreshToken)
+          throw new ForbiddenError(LoginErrors.NOT_LOGGED_IN);
+
+        const refreshToken = jwt.verify(
+          args.refreshToken,
+          `${process.env.REFRESH_TOKEN_SECRET}`
+        );
+
+        const id = (refreshToken as VerifyToken).id;
+        const user = await query(
+          "SELECT id FROM users WHERE id = ? AND verified = 1",
+          [id]
+        );
+
+        if (user.length === 0)
+          throw new AuthenticationError(LoginErrors.NOT_LOGGED_IN);
+
+        const travelLiked = await query(
+          "SELECT * FROM travel_likes WHERE travel_id = ? AND user_id = ?",
+          [args.travelID, id]
+        );
+
+        if (travelLiked.length !== 0) return false;
+
+        await query("INSERT INTO travel_likes VALUES(NULL, ?, ?)", [
+          args.travelID,
+          id,
+        ]);
+
+        const travelLikes = await query(
+          "SELECT COUNT(*) AS travelLikes FROM travel_likes WHERE travel_id = ? AND user_id = ?",
+          [args.travelID, id]
+        );
+
+        pubsub.publish(SubscriptionsTypes.TRAVEL_LIKED, {
+          travelLiked: travelLikes[0].travelLikes,
+          travelID: args.travelID,
+        });
+
+        return true;
+      } catch (e) {
+        throw new Error(e.message ? e.message : GlobalErrors.STH_WENT_WRONG);
+      }
     },
   },
   Subscription: {
