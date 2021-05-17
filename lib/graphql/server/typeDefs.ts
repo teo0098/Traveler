@@ -3,6 +3,7 @@ import { gql } from "apollo-server-micro";
 const typeDefs = gql`
   type SearchUser {
     id: Int!
+    username: String!
   }
 
   type User {
@@ -100,11 +101,11 @@ const typeDefs = gql`
     changeUserPhoto(refreshToken: String!, file: String!): Photo
     getUserData(refreshToken: String!): User
     editUsername(email: String!, username: String!): Boolean
-    likeTravel(travelID: Int!): String!
+    likeTravel(travelID: Int!, refreshToken: String!): Boolean!
   }
 
   type Subscription {
-    travelLiked(travelID: Int!): String!
+    travelLiked(travelID: Int!): Int!
   }
 `;
 

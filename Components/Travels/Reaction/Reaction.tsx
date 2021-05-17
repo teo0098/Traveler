@@ -15,6 +15,7 @@ const Reaction: React.FC<ReactionProps> = ({ travelID }) => {
   const [likeTravel] = useMutation(LIKE_TRAVEL, {
     variables: {
       travelID,
+      refreshToken: localStorage.getItem("refreshToken"),
     },
   });
 

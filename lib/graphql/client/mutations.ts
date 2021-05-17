@@ -39,8 +39,8 @@ export const VERIFY_USER = gql`
 `;
 
 export const LIKE_TRAVEL = gql`
-  mutation LikeTravel($travelID: Int!) {
-    likeTravel(travelID: $travelID)
+  mutation LikeTravel($travelID: Int!, $refreshToken: String!) {
+    likeTravel(travelID: $travelID, refreshToken: $refreshToken)
   }
 `;
 

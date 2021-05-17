@@ -1,9 +1,10 @@
 export enum LoginErrors {
   WRONG_CREDENTIALS = "Złe dane logowania",
+  NOT_LOGGED_IN = "Prosimy najpierw zalogować się na swoje konto",
 }
 
 export enum GlobalErrors {
-    STH_WENT_WRONG = 'Coś poszło nie tak... Spróbuj ponownie za jakiś czas'
+  STH_WENT_WRONG = "Coś poszło nie tak... Spróbuj ponownie za jakiś czas",
 }
 
 export enum VerifyErrors {
