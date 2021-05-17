@@ -3,7 +3,15 @@ import { gql } from "apollo-server-micro";
 const typeDefs = gql`
   type SearchUser {
     id: Int!
+  }
+
+  type User {
+    id: ID!
     username: String!
+    email: String!
+    password: String!
+    avatar: String!
+    travels: [String]!
   }
 
   type Travels {
@@ -27,8 +35,8 @@ const typeDefs = gql`
     images: [Images!]!
     users: [SearchUser]
   }
-
   type Query {
+    user: String
     users(userName: String!): [SearchUser!]!
     travels(offset: Int!): [Travels!]
     travel(id: Int!): TravelType!
@@ -46,6 +54,10 @@ const typeDefs = gql`
   type LoginAuth {
     refreshToken: String!
     accessToken: String!
+  }
+
+  type Photo {
+    photo: String!
   }
 
   input Files {
@@ -82,9 +94,12 @@ const typeDefs = gql`
       email: String!
       currentPassword: String!
       newPassword: String!
-    ): LoginAuth
+    ): Boolean
 
     editUsername(email: String!, newUsername: String!): LoginAuth
+    changeUserPhoto(refreshToken: String!, file: String!): Photo
+    getUserData(refreshToken: String!): User
+    editUsername(email: String!, username: String!): Boolean
     likeTravel(travelID: Int!): String!
   }
 

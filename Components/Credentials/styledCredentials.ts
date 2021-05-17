@@ -27,7 +27,7 @@ export const StyledCredentials : StyledComponent<"div", any> = styled.div`
 
 export const StyledFormWrapper : StyledComponent<"div", any, CredentialsProps> = styled.div<CredentialsProps>`
     background-color: ${({ theme }) => theme.colors.darkerLight};
-    padding: 10px;
+  padding: ${props => props.padding ? props.padding+"px" : '10px'};
     width: 90%;
     display: grid;
     row-gap: 30px;
@@ -37,7 +37,7 @@ export const StyledFormWrapper : StyledComponent<"div", any, CredentialsProps> =
     ${({ theme }) => theme.media.largePhone} {
         width: 400px;
         transform: translateY(-60px);
-        padding: 20px;
+        padding: ${props => props.padding ? props.padding+"px" : '20px'};
     }
 
     ${({ theme }) => theme.media.tablet} {
@@ -45,19 +45,19 @@ export const StyledFormWrapper : StyledComponent<"div", any, CredentialsProps> =
         grid-template-columns: ${({ single }) => single ? '100%' : '45% 45%'};
         justify-content: space-between;
         width: 90%;
-        padding: 30px;
+      padding: ${props => props.padding ? props.padding+"px" : '30px'};
     }
 
     ${({ theme }) => theme.media.desktop} {
         transform: translateY(-140px);
         width: 900px;
-        padding: 40px;
+      padding: ${props => props.padding ? props.padding+"px" : '40px'};
     }
 
     ${({ theme }) => theme.media.laptop} {
         transform: translateY(-180px);
         width: 900px;
-        padding: 50px;
+      padding: ${props => props.padding ? props.padding+"px" : '50px'};
     }
 `
 

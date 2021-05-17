@@ -1,6 +1,6 @@
-import Head from "next/head";
-
+import Head from 'next/head'
 import Travels from "../Components/Travels/Travels";
+
 
 const Home: React.FC = () => {
   return (
@@ -10,7 +10,7 @@ const Home: React.FC = () => {
       </Head>
       <Travels />
     </>
-  );
-};
+  )
+}
 
-export default Home;
+export default Home

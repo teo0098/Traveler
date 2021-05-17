@@ -7,14 +7,18 @@ const theme = {
     error: "#f44336",
     success: "#689F38",
     primary: "#1A237E",
-  },
-  fonts: {},
-  media: {
-    laptop: "@media (min-width: 1200px)",
-    desktop: "@media (min-width: 1024px)",
-    tablet: "@media (min-width: 728px)",
-    largePhone: "@media (min-width: 500px)",
-  },
-};
+    lightDark: '#c8c8c8',
+        gray: '#cdcdcd',
+    },
+    fonts: {
+        
+    },
+    media: {
+        laptop: '@media (min-width: 1200px)',
+        desktop: '@media (min-width: 1024px)',
+        tablet: '@media (min-width: 728px)',
+        largePhone: '@media (min-width: 500px)'
+    }
+}
 
-export default theme;
+export default theme
