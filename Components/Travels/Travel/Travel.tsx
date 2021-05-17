@@ -14,7 +14,7 @@ moment.locale("pl");
 
 const Travel: React.FC<ThemeInterface> = ({ theme }) => {
   const [visible, setVisible] = useState<boolean>(false);
-  const { username, name, image_url, created_at } = useContext(
+  const { username, name, image_url, created_at, id } = useContext(
     TravelInfoContext
   );
 
@@ -24,7 +24,7 @@ const Travel: React.FC<ThemeInterface> = ({ theme }) => {
       <SC.StyledImage>
         <Image layout="fill" src={image_url} alt="travel" objectFit="cover" />
       </SC.StyledImage>
-      <Reaction />
+      <Reaction travelID={id} />
       <div>
         {name ? <h2> {name} </h2> : null}
         <SC.StyledDate> {moment(+created_at).fromNow()} </SC.StyledDate>

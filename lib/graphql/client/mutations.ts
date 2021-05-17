@@ -39,7 +39,7 @@ export const VERIFY_USER = gql`
 `;
 
 export const LIKE_TRAVEL = gql`
-  mutation {
-    likeTravel
+  mutation LikeTravel($travelID: Int!) {
+    likeTravel(travelID: $travelID)
   }
 `;

@@ -4,15 +4,25 @@ import { useSubscription, useMutation } from "@apollo/client";
 import * as SC from "./styledReaction";
 import { TRAVEL_LIKED } from "../../../lib/graphql/client/subscriptions";
 import { LIKE_TRAVEL } from "../../../lib/graphql/client/mutations";
+import ReactionProps from "./reactionProps";
 
-const Reaction: React.FC = () => {
-  const { data } = useSubscription(TRAVEL_LIKED);
-  const [likeTravel, mData] = useMutation(LIKE_TRAVEL);
+const Reaction: React.FC<ReactionProps> = ({ travelID }) => {
+  const data = useSubscription(TRAVEL_LIKED, {
+    variables: {
+      travelID,
+    },
+  });
+  const [likeTravel] = useMutation(LIKE_TRAVEL, {
+    variables: {
+      travelID,
+    },
+  });
 
   return (
     <SC.StyledReaction>
       <Heart onClick={() => likeTravel()} />
-      {data ? data.travelLiked : null}
+      {console.log(data)}
+      {data.data ? data.data.travelLiked : null}
     </SC.StyledReaction>
   );
 };

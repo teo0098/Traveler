@@ -14,8 +14,8 @@ const server = new ApolloServer({
   subscriptions: {
     path: "/api/subscriptions",
     keepAlive: 9000,
-    onConnect: () => console.log("Polaczono"),
-    onDisconnect: () => console.log("Rozlaczono"),
+    onConnect: () => console.log("Polaczono websocket"),
+    onDisconnect: () => console.log("Rozlaczono websocket"),
   },
   context: ({ req, res }) => ({ req, res, pubsub }),
 });

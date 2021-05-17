@@ -62,7 +62,7 @@ const TravelInfo: React.FC<TravelInfoProps> = ({ visible, setVisible }) => {
                   images={(travelInfo.data.travel as TravelType).images}
                 />
                 <SC.StyledReaction>
-                  <Reaction />
+                  <Reaction travelID={id} />
                 </SC.StyledReaction>
                 <Information
                   users={(travelInfo.data.travel as TravelType).users}

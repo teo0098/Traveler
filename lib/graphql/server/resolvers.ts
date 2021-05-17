@@ -4,6 +4,7 @@ import {
   AuthenticationError,
   ForbiddenError,
 } from "apollo-server-micro";
+import { withFilter } from "apollo-server";
 
 import { AddTravelArgs, UserType } from "../../types/types";
 import { cloudinary } from "../../cloudinary/cloudinary";
@@ -349,16 +350,22 @@ const resolvers = {
       args: { travelID: number },
       { pubsub }: Context
     ) => {
-      await pubsub.publish(SubscriptionsTypes.TRAVEL_LIKED, {
-        travelLiked: `Podroz o id zostala polubiona`,
+      pubsub.publish(SubscriptionsTypes.TRAVEL_LIKED, {
+        travelLiked: `Podroz o id ${args.travelID} zostala polubionaaaaa`,
+        travelID: args.travelID,
       });
-      return "Podroz o id zostala polubiona";
+      return "SUCCESS";
     },
   },
   Subscription: {
     travelLiked: {
-      subscribe: (_: unknown, __: unknown, { pubsub }: Context) =>
-        pubsub.asyncIterator([SubscriptionsTypes.TRAVEL_LIKED]),
+      subscribe: withFilter(
+        (_: unknown, __: unknown, { pubsub }: Context) =>
+          pubsub.asyncIterator([SubscriptionsTypes.TRAVEL_LIKED]),
+        (payload, variables) => {
+          return payload.travelID === variables.travelID;
+        }
+      ),
     },
   },
 };
