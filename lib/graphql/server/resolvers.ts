@@ -56,8 +56,8 @@ const resolvers = {
         const travels = await query(
           `
             SELECT travels.id, travels.name, travels.created_at , travel_images.image_url, users.username,
-            (SELECT COUNT(*) AS travelLikes FROM travel_likes WHERE travel_id = travels.id) as travelLikes,
-            (SELECT COUNT(*) AS travelLikes FROM travel_likes WHERE travel_id = travels.id AND user_id = ?) as userLikes
+            (SELECT COUNT(*) FROM travel_likes WHERE travel_id = travels.id) as travelLikes,
+            (SELECT COUNT(*) FROM travel_likes WHERE travel_id = travels.id AND user_id = ?) as userLikes
             FROM travels
             JOIN users ON travels.user_id=users.id
             JOIN travel_images ON travels.id=travel_images.travel_id
@@ -74,8 +74,20 @@ const resolvers = {
         throw new Error(e.message ? e.message : GlobalErrors.STH_WENT_WRONG);
       }
     },
-    travel: async (_: unknown, args: { id: number }) => {
+    travel: async (
+      _: unknown,
+      args: { id: number; refreshToken: string | null | undefined }
+    ) => {
       try {
+        let id: number = 0;
+        if (args.refreshToken) {
+          const refreshToken = jwt.verify(
+            args.refreshToken,
+            `${process.env.REFRESH_TOKEN_SECRET}`
+          );
+          id = (refreshToken as VerifyToken).id;
+        }
+
         const results = await db
           .transaction()
           .query(
@@ -98,6 +110,14 @@ const resolvers = {
             AND travel_tags.travel_id = ?`,
             [args.id]
           )
+          .query(
+            "SELECT COUNT(*) as travelLikes FROM travel_likes WHERE travel_id = ?",
+            [args.id]
+          )
+          .query(
+            "(SELECT COUNT(*) as userLikes FROM travel_likes WHERE travel_id = ? AND user_id = ?) ",
+            [args.id, id]
+          )
           .commit();
 
         if (!results || results.length < 1) throw new Error();
@@ -106,6 +126,8 @@ const resolvers = {
           ...results[0][0],
           images: results[1],
           users: results[2],
+          travelLikes: results[3][0].travelLikes,
+          userLikes: results[4][0].userLikes,
         };
       } catch (e) {
         throw new Error(e.message ? e.message : GlobalErrors.STH_WENT_WRONG);
@@ -486,13 +508,11 @@ const resolvers = {
           [args.travelID, id]
         );
 
-        let direction: number = 1;
         if (travelLiked.length !== 0) {
           await query(
             "DELETE FROM travel_likes WHERE travel_id = ? AND user_id = ?",
             [args.travelID, id]
           );
-          direction = -1;
         } else {
           await query("INSERT INTO travel_likes VALUES(NULL, ?, ?)", [
             args.travelID,
@@ -506,10 +526,7 @@ const resolvers = {
         );
 
         pubsub.publish(SubscriptionsTypes.TRAVEL_LIKED, {
-          travelLiked: {
-            likes: travelLikes[0].travelLikes,
-            direction,
-          },
+          travelLiked: travelLikes[0].travelLikes,
           travelID: args.travelID,
         });
 

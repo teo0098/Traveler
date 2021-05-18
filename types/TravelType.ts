@@ -11,4 +11,5 @@ export type TravelType = {
     id: number;
     username: string;
   }>;
+  travelLikes: number;
 };

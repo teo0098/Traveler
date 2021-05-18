@@ -1,11 +1,12 @@
 import { useSubscription, useMutation } from "@apollo/client";
-import { useEffect, useState, useContext } from "react";
+import { useEffect, useContext } from "react";
 
 import { TRAVEL_LIKED } from "../../lib/graphql/client/subscriptions";
 import { LIKE_TRAVEL } from "../../lib/graphql/client/mutations";
 import TravelInfoContext from "../../context/TravelInfoContext";
+import TravelLikesContext from "../../context/TravelLikesContext";
 
-const useReaction = (travelID: number) => {
+const useReaction = (travelID: number, detailsTravelLikes?: number) => {
   const { data, error } = useSubscription(TRAVEL_LIKED, {
     variables: {
       travelID,
@@ -18,21 +19,26 @@ const useReaction = (travelID: number) => {
     },
     onError: () => {},
   });
-  const { travelLikes, userLikes } = useContext(TravelInfoContext);
-  const [travelLiked, setTravelLiked] = useState<boolean>(
-    userLikes > 0 ? true : false
-  );
+  const { travelLikes } = useContext(TravelInfoContext);
+  const { travelLiked, setTravelLiked } = useContext(TravelLikesContext);
 
   const handleLikeTravel = () => {
     setTravelLiked((prevState) => !prevState);
     likeTravel();
   };
 
+  const handleShowLikes = () => {
+    if (data) return data.travelLiked;
+    if (detailsTravelLikes || detailsTravelLikes === 0)
+      return detailsTravelLikes;
+    return travelLikes;
+  };
+
   useEffect(() => {
-    if (likeTravelError || error) setTravelLiked((prevState) => prevState);
+    if (likeTravelError || error) setTravelLiked((prevState) => !prevState);
   }, [likeTravelError, error]);
 
-  return { data, travelLiked, handleLikeTravel, travelLikes };
+  return { travelLiked, handleLikeTravel, handleShowLikes };
 };
 
 export default useReaction;

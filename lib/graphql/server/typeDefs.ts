@@ -37,12 +37,15 @@ const typeDefs = gql`
     endTime: String
     images: [Images!]!
     users: [SearchUser]
+    travelLikes: Int!
+    userLikes: Int!
   }
+
   type Query {
     user: String
     users(userName: String!): [SearchUser!]!
     travels(offset: Int!, refreshToken: String): [Travels!]
-    travel(id: Int!): TravelType!
+    travel(id: Int!, refreshToken: String): TravelType!
   }
 
   type AuthPayload {
@@ -105,13 +108,8 @@ const typeDefs = gql`
     likeTravel(travelID: Int!, refreshToken: String!): Boolean!
   }
 
-  type Likes {
-    likes: Int!
-    direction: Int!
-  }
-
   type Subscription {
-    travelLiked(travelID: Int!): Likes!
+    travelLiked(travelID: Int!): Int!
   }
 `;
 

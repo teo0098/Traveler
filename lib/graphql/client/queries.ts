@@ -24,8 +24,8 @@ export const GET_TRAVELS = gql`
 `;
 
 export const GET_TRAVEL = gql`
-  query GetTravel($id: Int!) {
-    travel(id: $id) {
+  query GetTravel($id: Int!, $refreshToken: String) {
+    travel(id: $id, refreshToken: $refreshToken) {
       description
       payAttention
       startTime
@@ -38,6 +38,8 @@ export const GET_TRAVEL = gql`
         id
         username
       }
+      travelLikes
+      userLikes
     }
   }
 `;
