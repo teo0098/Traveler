@@ -23,8 +23,10 @@ const useReaction = (travelID: number, detailsTravelLikes?: number) => {
   const { travelLiked, setTravelLiked } = useContext(TravelLikesContext);
 
   const handleLikeTravel = () => {
-    setTravelLiked((prevState) => !prevState);
-    likeTravel();
+    if (localStorage.getItem("refreshToken")) {
+      setTravelLiked((prevState) => !prevState);
+      likeTravel();
+    }
   };
 
   const handleShowLikes = () => {
